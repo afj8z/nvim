@@ -1,4 +1,5 @@
 local caps = require("lspcaps").caps
+local util = require("lspconfig.util")
 
 return {
 	root_markers = { ".git", "typst.toml", "typrc.typ" },
