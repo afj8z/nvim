@@ -1,0 +1,15 @@
+require("utils").load_modules("plugins", {
+	"oil",
+	"ts",
+	"typpv",
+	"copilot",
+	"blcmp",
+	"format",
+	"runfile",
+	"sniprun",
+	"fzf",
+	"colorize",
+	"grug",
+	"npairs",
+	"bracketm",
+})
