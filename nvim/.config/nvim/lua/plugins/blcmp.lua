@@ -1,5 +1,6 @@
 vim.pack.add({
-	{ src = "https://github.com/L3MON4D3/LuaSnip" },
+	{ src = "https://github.com/xieyonn/blink-cmp-dat-word.git" },
+	{ src = "https://github.com/L3MON4D3/LuaSnip", run = "make install_jsregexp" },
 	{ src = "https://github.com/rafamadriz/friendly-snippets" },
 	{
 		src = "https://github.com/Saghen/blink.cmp",
@@ -7,7 +8,10 @@ vim.pack.add({
 	},
 })
 
-require("luasnip").config.setup({ enable_autosnippets = true })
+require("luasnip").config.setup({
+	enable_autosnippets = true,
+	store_selection_keys = "<Tab>",
+})
 
 require("luasnip.loaders.from_vscode").lazy_load()
 require("luasnip.loaders.from_lua").load({
@@ -37,10 +41,19 @@ require("blink.cmp").setup({
 	},
 	snippets = { preset = "luasnip" },
 	sources = {
-		default = { "lsp", "path", "buffer" },
+		default = { "lsp", "path", "buffer", "datword" },
 		providers = {
 			lsp = {
 				timeout_ms = 10000,
+			},
+			datword = {
+				name = "Word",
+				module = "blink-cmp-dat-word",
+				opts = {
+					paths = {
+						"~/personal/words.txt",
+					},
+				},
 			},
 		},
 	},

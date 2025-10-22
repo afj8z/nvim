@@ -29,6 +29,7 @@ require("nvim-treesitter.configs").setup({
 		"hyprlang",
 		"rasi",
 		"c",
+		"typst",
 	},
 	highlight = { enable = true },
 	autopairs = {

@@ -77,7 +77,7 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-function get_scr_width()
+local function get_scr_width()
 	local width = vim.api.nvim_win_get_width(0)
 	local ft = vim.bo.filetype
 

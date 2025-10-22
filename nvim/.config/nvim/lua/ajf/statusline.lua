@@ -267,18 +267,12 @@ function M.filetype_component()
 
 	local icon, icon_hl
 	if special_icons[filetype] then
-		-- FIX 1: Unpack both the icon and its highlight group.
 		icon, icon_hl = unpack(special_icons[filetype])
 	else
-		-- FIX 2: Provide a default icon and highlight for non-special filetypes.
-		-- You could integrate nvim-web-devicons here if you use it.
-		-- For now, a simple default is used.
 		icon = "" -- A generic file icon
 		icon_hl = "Directory" -- A generic highlight group
 	end
 
-	-- FIX 3: Pass all three required arguments to string.format.
-	-- I also added a space after the icon for better padding.
 	return string.format("%%#%s#%s %%#StatuslineTitle#%s", icon_hl, icon, filetype)
 end
 
@@ -289,6 +283,15 @@ function M.filename()
 		return ""
 	end
 	return fname .. " "
+end
+
+---@return string
+function M.filename_inactive()
+	local fname = vim.fn.expand("%:.")
+	if fname == "" then
+		return ""
+	end
+	return string.format("%%#Conceal#%s", fname)
 end
 
 --- File-content encoding for the current buffer.
@@ -306,9 +309,9 @@ function M.position_component()
 	local col = vim.fn.virtcol(".")
 
 	return table.concat({
-		"%#StatuslineItalic#l: ",
+		"%#StatuslineItalic#l:",
 		string.format("%%#StatuslineTitle#%d", line),
-		string.format("%%#StatuslineItalic#/%d c: %d", line_count, col),
+		string.format("%%#StatuslineItalic#/%d c:%d", line_count, col),
 	})
 end
 
@@ -344,6 +347,35 @@ function M.render()
 	})
 end
 
-vim.o.statusline = "%!v:lua.require'ajf.statusline'.render()"
+--- Renders the inactive statusline.
+---@return string
+function M.render_inactive()
+	---@param components string[]
+	---@return string
+	local function concat_components(components)
+		return vim.iter(components):skip(1):fold(components[1], function(acc, component)
+			return #component > 0 and string.format("%s  %s", acc, component) or acc
+		end)
+	end
+
+	return table.concat({
+		M.filename_inactive(),
+		-- "%=",
+		-- "%S ",
+		-- "%#StatusLine#%=",
+		-- "inactiveLine",
+	})
+end
+
+vim.api.nvim_exec(
+	[[
+  augroup Statusline
+  au!
+  au WinEnter,BufEnter * setlocal statusline=%!v:lua.require'ajf.statusline'.render()
+  au WinLeave,BufLeave * setlocal statusline=%!v:lua.require'ajf.statusline'.render_inactive()
+  augroup END
+]],
+	false
+)
 
 return M

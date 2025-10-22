@@ -13,7 +13,7 @@ local settings = {
 -- cache the settings table
 require("utils").set_settings(settings)
 
-require("lsp")
+require("mylsp")
 
 -- modular config
 require("ajf")

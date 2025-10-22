@@ -5,6 +5,6 @@ vim.pack.add({
 require("typst-preview").setup({
 	dependencies_bin = { ["tinymist"] = "tinymist" },
 	open_cmd = 'firefox --new-window --no-remote -P "preview-profile" %s',
-	invert_colors = '{"rest": "always","image": "never"}',
+	-- invert_colors = '{"rest": "always","image": "never"}',
 	follow_cursor = true,
 })

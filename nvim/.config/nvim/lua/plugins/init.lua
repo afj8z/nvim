@@ -12,4 +12,5 @@ require("utils").load_modules("plugins", {
 	"grug",
 	"npairs",
 	"bracketm",
+	"illustrate",
 })

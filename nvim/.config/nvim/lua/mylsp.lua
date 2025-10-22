@@ -38,10 +38,28 @@ require("mason-tool-installer").setup({
 	run_on_start = true,
 })
 
-local lspconfig = require("lspconfig")
-local util = require("lspconfig.util")
-
-vim.lsp.enable("stata-language-server")
+vim.lsp.enable({
+	"clangd",
+	"rust-analyzer",
+	"basedpyright",
+	"lua_ls",
+	"tombi",
+	"biome",
+	"rstcheck",
+	"tinymist",
+	"typstyle",
+	"emmet_ls",
+	"bashls",
+	"prettierd",
+	"black",
+	"ruff",
+	"eslint_d",
+	"shellcheck",
+	"stylua",
+	"prettier",
+	"json-lsp",
+	"marksman",
+})
 
 -- LspAttach keymaps
 vim.api.nvim_create_autocmd(

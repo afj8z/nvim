@@ -87,3 +87,34 @@ function RUN_FILE()
 end
 
 map("n", "<Leader>m", "<cmd>lua RUN_FILE()<CR>")
+
+local function list_snips()
+	local filetype = vim.bo.filetype
+	local available_snippets = require("luasnip").available()
+
+	if not available_snippets[filetype] then
+		print("No LuaSnip snippets found for filetype: " .. filetype)
+		return
+	end
+
+	local snips_info = {}
+	for _, snippet in ipairs(available_snippets[filetype]) do
+		table.insert(snips_info, {
+			trigger = snippet.trigger,
+			name = snippet.name or "N/A",
+			type = snippet.snippetType or "snippet",
+		})
+	end
+
+	if #snips_info == 0 then
+		print("No LuaSnip snippets found for filetype: " .. filetype)
+		return
+	end
+
+	print("Available snippets for filetype: " .. filetype)
+	for _, info in ipairs(snips_info) do
+		print(string.format("- Trigger: %-15s Name: %-30s Type: %s", info.trigger, info.name, info.type))
+	end
+end
+
+vim.api.nvim_create_user_command("SnipList", list_snips, {})
