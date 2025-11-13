@@ -7,36 +7,10 @@ vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim" },
-	{ src = "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim" },
+	-- { src = "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim" },
 })
 require("mason").setup()
 require("mason-lspconfig").setup()
-require("mason-tool-installer").setup({
-	ensure_installed = {
-		"clangd",
-		"rust-analyzer",
-		"basedpyright",
-		"lua_ls",
-		"tombi",
-		"biome",
-		"rstcheck",
-		"tinymist",
-		"typstyle",
-		"emmet_ls",
-		"bashls",
-		"prettierd",
-		"black",
-		"ruff",
-		"eslint_d",
-		"shellcheck",
-		"stylua",
-		"prettier",
-		"json-lsp",
-		"marksman",
-	},
-	auto_update = false,
-	run_on_start = true,
-})
 
 vim.lsp.enable({
 	"clangd",

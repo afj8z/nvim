@@ -176,6 +176,38 @@ function M.open_root_todo()
 	end
 end
 
+local function find_word_in_dir(dir)
+	for filename in vim.fs.dir(dir) do
+		local basename = filename:gsub("%..*$", "")
+		if basename:lower() == "local-words" then
+			return vim.fs.joinpath(dir, filename)
+		end
+	end
+	return nil
+end
+
+function M.get_local_word_dict()
+	local default_dict = vim.fs.normalize("~/personal/words.txt")
+	local sources = { default_dict }
+	local word_dict_markers = { "local-words.txt" }
+
+	local root_dir = vim.fs.root(0, word_dict_markers)
+
+	if root_dir then
+		local word_file = find_word_in_dir(root_dir)
+
+		if word_file then
+			table.insert(sources, 1, word_file)
+			print("local word dictionary found.")
+		else
+			print("No local word dictionary found, using general dict.")
+		end
+	else
+		print("No local word dictionary found, using general dict.")
+	end
+	return sources
+end
+
 function M.surround_motion_with()
 	-- This operator funcon will run AFTER the user provides a motion (e.g., 'iw').
 	_G.__surround_operator_func = function()
@@ -215,6 +247,61 @@ function M.surround_motion_with()
 
 	vim.o.operatorfunc = "v:lua._G.__surround_operator_func"
 	return "g@"
+end
+
+function M.insert_screenshot()
+	local ftype = vim.bo.filetype
+
+	if ftype ~= "typst" then
+		return vim.notify("ft is not typst, cannot find format for current ft", vim.log.levels.WARN)
+	end
+
+	local filePath = vim.fs.normalize("~/.typst/local/snips/0.1.0/snipmap.csv")
+	local lastLine = vim.fn.system({ "awk", "END{print}", filePath })
+	local snip = lastLine:gsub(",.*$", "")
+
+	local templates = {
+		typst = {
+			'#snip("' .. snip .. '"),',
+		},
+	}
+
+	local template_string = templates[ftype]
+
+	local function insert_lines(template)
+		for i, txt in ipairs(template) do
+			local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+			vim.api.nvim_buf_set_lines(0, row + i - 2, row + i - 1, false, { txt })
+		end
+	end
+
+	insert_lines(template_string)
+end
+
+function M.ToggleCursorLine()
+	if vim.o.cursorline then
+		vim.o.cursorline = false
+		vim.api.nvim_set_hl(0, "CursorLineNr", { link = "LineNr" })
+		vim.api.nvim_set_hl(0, "CursorLineSign", { link = "SignColumn" })
+	else
+		vim.o.cursorline = true
+		local normal_hl = vim.api.nvim_get_hl(0, { name = "Normal" })
+		local cl_hl = vim.api.nvim_get_hl(0, { name = "CursorLine" })
+		if normal_hl and normal_hl.fg and normal_hl.bg then
+			vim.api.nvim_set_hl(0, "CursorLineNr", {
+				fg = normal_hl.bg,
+				bg = normal_hl.fg,
+				bold = true,
+				force = true, -- Force this to override the link
+			})
+		end
+		if cl_hl and cl_hl.bg then
+			vim.api.nvim_set_hl(0, "CursorLineSign", {
+				bg = cl_hl.bg,
+				force = true,
+			})
+		end
+	end
 end
 
 return M

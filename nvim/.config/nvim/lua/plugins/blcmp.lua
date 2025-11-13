@@ -50,9 +50,7 @@ require("blink.cmp").setup({
 				name = "Word",
 				module = "blink-cmp-dat-word",
 				opts = {
-					paths = {
-						"~/personal/words.txt",
-					},
+					paths = require("ajf.keyfunc").get_local_word_dict(),
 				},
 			},
 		},

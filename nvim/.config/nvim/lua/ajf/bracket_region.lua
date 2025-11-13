@@ -77,9 +77,9 @@ function M.highlight_between()
 	-- detect if we're ON a bracket; if not, check previous char (insert-mode friendly)
 	local ch = get_char_at(row, col)
 	if not pairs_map[ch or ""] then
-		ch = get_char_at(row, col - 1)
+		ch = get_char_at(row, col)
 		if pairs_map[ch or ""] then
-			col = col - 1
+			col = col
 		else
 			return -- not at a bracket: nothing to do
 		end

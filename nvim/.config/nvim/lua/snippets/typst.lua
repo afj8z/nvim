@@ -11,150 +11,146 @@ local l = extras.lambda
 local rep = extras.rep
 local fmt = require("luasnip.extras.fmt").fmt
 local fmta = require("luasnip.extras.fmt").fmta
+local line_begin = require("luasnip.extras.expand_conditions").line_begin
+local mode = require("snippets.util.logic")
+local cstm_gen = require("snippets.util.format")
+local format_subscript = cstm_gen.format_subscript
+local heading_level = cstm_gen.heading_level
+local generate_row = cstm_gen.generate_row
+local generate_fraction = cstm_gen.generate_fraction
+local expand_equation = cstm_gen.expand_equation
+local which_mode = cstm_gen.which_math_mode
+local generate_matrix = cstm_gen.generate_matrix
+local generate_cases = cstm_gen.generate_cases
+local format_probability = cstm_gen.format_probability
+local format_symbol = cstm_gen.format_symbol
+local return_capture = cstm_gen.return_capture
+local frac_logic = cstm_gen.frac_logic
+local testarg = cstm_gen.test_arg
+local single_probability = cstm_gen.single_probability
+local sub_symbol = cstm_gen.sub_symbol
+local build_screenshot_node = cstm_gen.build_screenshot_node
 
-local in_math = require("snippets.typst-mode").is_in_math
-local not_math = require("snippets.typst-mode").not_in_math
+local math_snippet = mode.math_snippet
+local not_math_s = mode.not_math_s
 
--- Helper function to create an auto-expanding math snippet
-local function math_snippet(trigger, nodes, opts)
-	opts = opts or {}
-
-	local trigger_opts = {
-		trig = trigger,
-		wordTrig = opts.wordTrig == nil and true or opts.wordTrig,
-		priority = opts.priority,
-	}
-
-	if opts.regTrig then
-		trigger_opts.regTrig = true
-	end
-
-	opts.condition = in_math
-	opts.wordTrig = nil
-	opts.regTrig = nil
-	opts.priority = nil
-
-	return s(trigger_opts, nodes, opts)
-end
-
-local function not_math_s(trigger, nodes, opts)
-	opts = opts or {}
-
-	local trigger_opts = {
-		trig = trigger,
-		wordTrig = opts.wordTrig == nil and true or opts.wordTrig,
-	}
-
-	if opts.regTrig then
-		trigger_opts.regTrig = true
-	end
-
-	opts.condition = not_math
-	opts.wordTrig = nil
-	opts.regTrig = nil
-
-	return s(trigger_opts, nodes, opts)
-end
-
-local generate_fraction = function(args, parent)
-	local stripped = parent.captures[1]
-	return sn(nil, { t("frac(" .. stripped .. ", "), i(1), t(")") })
-end
-
-local function format_subscript(args, parent)
-	local letter = parent.captures[1]
-	local digits = parent.captures[2]
-
-	local final_text
-	if #digits > 1 then
-		final_text = letter .. "_(" .. digits .. ")"
-	else
-		final_text = letter .. "_" .. digits
-	end
-
-	return sn(nil, { t(final_text) })
-end
-
-local greek_map = {
-	[",a"] = "alpha",
-	[",b"] = "beta",
-	[",g"] = "gamma",
-	[",d"] = "delta",
-	[",e"] = "epsilon",
-	[",z"] = "zeta",
-	[",et"] = "eta",
-	[",th"] = "theta",
-	[",i"] = "iota",
-	[",k"] = "kappa",
-	[",l"] = "lambda",
-	[",m"] = "mu",
-	[",n"] = "nu",
-	[",x"] = "xi",
-	[",o"] = "omicron",
-	[",p"] = "pi",
-	[",r"] = "rho",
-	[",s"] = "sigma",
-	[",t"] = "tau",
-	[",u"] = "upsilon",
-	[",ph"] = "phi",
-	[",ch"] = "chi",
-	[",ps"] = "psi",
-	[",w"] = "omega",
-	[",G"] = "Gamma",
-	[",D"] = "Delta",
-	[",T"] = "Theta",
-	[",L"] = "Lambda",
-	[",X"] = "Xi",
-	[",P"] = "Pi",
-	[",S"] = "Sigma",
-	[",U"] = "Upsilon",
-	[",Ph"] = "Phi",
-	[",Ps"] = "Psi",
-	[",O"] = "Omega",
-}
-
-local greek_snippets = {}
-
-for trigger, expansion in pairs(greek_map) do
-	table.insert(greek_snippets, math_snippet(trigger, { t(expansion) }))
-end
-
-local operator_map = {
-	["imp"] = "==>",
-	["to"] = "->",
-	["lrar"] = "<=>",
-	["larr"] = "-->",
-	["larl"] = "<--",
-	["map"] = "mapsto",
-	["subs"] = "subset",
-	["sups"] = "supset",
-	["uni"] = "union",
-	["sec"] = "inter",
-	["diam"] = "diameter",
-	["..."] = "dots.c",
-	["xx"] = "dot",
-	["inf"] = "oo",
-	["fall"] = "forall",
-	["pp"] = "+",
-	["mm"] = "-",
-	["ee"] = "=",
-	["gte"] = "gt.eq",
-	["lte"] = "lt.eq",
-}
-
-local operator_snippets = {}
-
-for trigger, expansion in pairs(operator_map) do
-	table.insert(operator_snippets, math_snippet(trigger, { t(expansion) }))
-end
+local mapped_snippets = require("snippets.util.maps").return_map()
 
 return {}, {
 
-	math_snippet("uu", fmt("^({})", { i(1) }), { wordTrig = false }),
+	-- add "()" to _
+	math_snippet(
+		"([^%s^J])J",
+		fmt("{}_({}) ", { f(function(_, snip)
+			return snip.captures[1]
+		end), i(1) }),
+		{ regTrig = true, wordTrig = false }
+	),
 
-	math_snippet("dd", fmt("_({})", { i(1) }), { wordTrig = false }),
+	math_snippet(
+		"arr([%a])",
+		fmt("arrow.{} ", {
+			f(function(_, snip)
+				return snip.captures[1]
+			end),
+		}),
+		{ regTrig = true, wordTrig = false }
+	),
+	-- add "()" to ^
+	math_snippet(
+		"([^%s^K])K",
+		fmt("{}^({}) ", { f(function(_, snip)
+			return snip.captures[1]
+		end), i(1) }),
+		{ regTrig = true, wordTrig = false }
+	),
+
+	-- add "()" to ^
+	math_snippet(
+		"(%w)^",
+		fmt("{}^({}) ", { f(function(_, snip)
+			return snip.captures[1]
+		end), i(1) }),
+		{ regTrig = true, wordTrig = false }
+	),
+
+	-- ^asterisk (max etc)
+	math_snippet(
+		"([%a%)%]%}])%*%*",
+		fmt("{}^(*) {} ", { f(function(_, snip)
+			return snip.captures[1]
+		end), i(0) }),
+		{ regTrig = true, wordTrig = false }
+	),
+	-- log with subscript
+	math_snippet(
+		"ll(.*)%s",
+		fmt("log_({}) {}", { f(function(_, snip)
+			return snip.captures[1]
+		end), i(0) }),
+		{ regTrig = true }
+	),
+	-- matrix type
+	math_snippet(
+		"([%a%d])([%a%d])mm",
+		fmt("({} times {}) {}", {
+			f(function(_, snip)
+				return snip.captures[1]
+			end),
+			f(function(_, snip)
+				return snip.captures[2]
+			end),
+			i(0),
+		}),
+		{ regTrig = true }
+	),
+	-- transposed matrix
+	math_snippet(
+		"([a-zA-Z])TT",
+		fmt("{}^(T) {}", { f(function(_, snip)
+			return snip.captures[1]
+		end), i(0) }),
+		{ regTrig = true, wordTrig = false }
+	),
+
+	math_snippet("kk", fmt("^({}) ", { i(1) }), { wordTrig = false }),
+
+	math_snippet("jj", fmt("_({}) ", { i(1) }), { wordTrig = false }),
+
+	math_snippet("JK", fmt("_({})^({}) ", { i(1), i(2) }), { wordTrig = false }),
 
 	math_snippet("int", fmt("integral_({})^({})", { i(1), i(2) })),
+
+	math_snippet("dvv", fmt("mat({}) dot vec({})", { i(1), i(2) })),
+
+	math_snippet(
+		"vv(%a+) ",
+		fmt("vec({}) {}", {
+			-- Your d-node definition is correct.
+			d(1, return_capture, {}, { user_args = { "comma" } }),
+			i(2),
+		}),
+		{ regTrig = true }
+	),
+
+	math_snippet(
+		"fu([%a%d]*) ",
+		fmt("f_({}) {}", {
+			-- Your d-node definition is correct.
+			d(1, return_capture, {}, { user_args = { "comma_num_down" } }),
+			i(2),
+		}),
+		{ regTrig = true }
+	),
+	math_snippet(
+		"avv(%a+) ",
+		fmt("vec({}) {}", {
+			-- Your d-node definition is correct.
+			d(1, return_capture, {}, { user_args = { "space" } }),
+			i(2),
+		}),
+		{ regTrig = true }
+	),
 
 	math_snippet("diff", fmt("diff/diff({})", { i(1) })),
 
@@ -192,13 +188,148 @@ return {}, {
 
 	math_snippet("([a-zA-Z])(%d+) ", { d(1, format_subscript) }, { regTrig = true, wordTrig = false }),
 
-	math_snippet("(%d+)//", { d(1, generate_fraction) }, { regTrig = true, wordTrig = false }),
+	math_snippet("([A-Z])([a-z]) ", { d(1, format_subscript) }, { regTrig = true, wordTrig = false }),
 
-	not_math_s("mm", fmt("${}$ ", { i(1) })),
+	math_snippet("(%d+)ff", { d(1, generate_fraction) }, { regTrig = true, wordTrig = false }),
 
-	not_math_s("(^MM)", fmt("$ {} $ ", { i(1) }), { regTrig = true }),
+	math_snippet(
+		"(.*[%)]?[^%w%a])ff",
+		fmt("{}, {})", {
+			d(1, frac_logic),
+			i(0),
+		}),
 
-	unpack(greek_snippets),
+		{ regTrig = true, wordTrig = false }
+	),
 
-	unpack(operator_snippets),
+	math_snippet(
+		"P([o]?[A-Z]) ",
+		fmt("P({}) {}", {
+			d(1, single_probability),
+			i(0),
+		}),
+		{ regTrig = true, wordTrig = false }
+	),
+
+	math_snippet(
+		"P([o]?[A-Z])([usic])([o]?[A-Z])([usic]?)([o]?[A-Z]?) ",
+		fmt("P({}{}{}{}{}){}", {
+			d(1, single_probability),
+			d(2, sub_symbol, {}, {
+				user_args = {
+					2,
+					{
+						["u"] = "union",
+						["s"] = "inter",
+						["i"] = "bot",
+						["c"] = "|",
+					},
+				},
+			}),
+			d(3, single_probability, {}, { user_args = { 3 } }),
+			d(4, sub_symbol, {}, {
+				user_args = {
+					4,
+					{
+						["u"] = "union",
+						["s"] = "inter",
+						["i"] = "bot",
+						["c"] = "|",
+					},
+				},
+			}),
+			d(5, single_probability, {}, { user_args = { 5 } }),
+			i(0),
+		}),
+		{ regTrig = true, wordTrig = false }
+	),
+
+	math_snippet(
+		"([bBpvV]?)mat(%d)(%d)",
+		fmta(
+			[[
+	mat(delim:<>,
+	<>
+	)<>]],
+			{
+				f(function(_, snip)
+					local prefix = snip.captures[1] or ""
+					if (prefix == "b") or (prefix == "B") then
+						return '"["'
+					elseif (prefix == "p") or prefix == "v" or prefix == "V" then
+						return '"{"'
+					else
+						return '"("'
+					end
+				end),
+				d(1, generate_matrix),
+				i(0),
+			}
+		),
+		{ regTrig = true }
+	),
+
+	math_snippet(
+		"css(%d)",
+		fmta(
+			[[
+	cases(
+	<>
+	)<>]],
+			{ d(1, generate_cases), i(0) }
+		),
+		{ regTrig = true }
+	),
+
+	not_math_s("mm(.)", fmt("{} {}", { d(1, which_mode), i(0) }), { regTrig = true, wordTrig = true }),
+
+	not_math_s("^(h)(%d)", fmt("{} {}", { d(1, heading_level), i(0) }), { regTrig = true, wordTrig = false }),
+
+	not_math_s("^(MM)", fmt("$\n	{}\n$\n{} ", { i(1), i(2) }), { regTrig = true }),
+
+	not_math_s("^(MM)", fmt("$\n	{}\n$\n{} ", { i(1), i(2) }), { regTrig = true }),
+
+	-- idk if their is an easier way to pass capture group indexes to
+	-- functions
+	math_snippet(
+		"([%d]?)TEST(%d)",
+		fmt("first:{}second:{}", {
+			d(1, testarg, {}, { user_args = { 1 } }),
+			d(2, testarg, {}, { user_args = { 2 } }),
+		}),
+		{ regTrig = true, wordTrig = false }
+	),
+
+	-- passing a table in userrags. What sort of dynamic hell could we create
+	-- with this
+	math_snippet(
+		"SUBSYM([usic])",
+		fmt("symbol:{}", {
+			d(1, sub_symbol, {}, {
+				user_args = {
+					1,
+					{
+						["u"] = "union",
+						["s"] = "inter",
+						["i"] = "bot",
+						["c"] = "|",
+					},
+				},
+			}),
+		}),
+		{ regTrig = true, wordTrig = false }
+	),
+
+	not_math_s(
+		"SNIP",
+		-- This template has two placeholders:
+		-- 1. The main block, generated by the d-node
+		-- 2. The final cursor position (i(0))
+		fmt("{}\n{}", {
+			-- Placeholder 1: Call the dynamic function
+			d(1, build_screenshot_node),
+			i(0),
+		})
+	),
+	unpack(mapped_snippets),
 }

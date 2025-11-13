@@ -1,7 +1,8 @@
+vim.loader.enable()
 -- variable settings for uniform style between plugins
 local settings = {
 	theme = "ever",
-	border = "solid",
+	border = "single",
 	symbols = {
 		error = "E",
 		warn = "W",
@@ -20,3 +21,4 @@ require("ajf")
 require("config")
 require("plugins")
 require("colors")
+require("helpfile").setup()

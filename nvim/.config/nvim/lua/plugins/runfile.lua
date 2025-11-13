@@ -10,7 +10,9 @@ vim.api.nvim_create_autocmd({ "TermOpen", "BufEnter" }, {
 })
 
 local function run_current_file_in_split()
-	if vim.bo.modified then vim.cmd.write() end
+	if vim.bo.modified then
+		vim.cmd.write()
+	end
 	local file = vim.api.nvim_buf_get_name(0)
 	if file == "" then
 		vim.notify("No file to run", vim.log.levels.WARN)
@@ -31,23 +33,53 @@ local function run_current_file_in_split()
 	if not cmd then
 		local ft = vim.bo.filetype
 		local map = {
-			python = function() return { "python3", file } end,
-			lua = function() return { "lua", file } end,
-			javascript = function() return { "node", file } end,
-			typescript = function()
-				if vim.fn.executable("tsx") == 1 then return { "tsx", file } end
-				if vim.fn.executable("ts-node") == 1 then return { "ts-node", file } end
-				if vim.fn.executable("deno") == 1 then return { "deno", "run", file } end
+			python = function()
+				return { "python3", file }
 			end,
-			sh = function() return { "bash", file } end,
-			bash = function() return { "bash", file } end,
-			zsh = function() return { "zsh", file } end,
-			ruby = function() return { "ruby", file } end,
-			perl = function() return { "perl", file } end,
-			php = function() return { "php", file } end,
-			r = function() return { "Rscript", file } end,
-			julia = function() return { "julia", file } end,
-			go = function() return { "go", "run", file } end,
+			lua = function()
+				return { "lua", file }
+			end,
+			javascript = function()
+				return { "node", file }
+			end,
+			typescript = function()
+				if vim.fn.executable("tsx") == 1 then
+					return { "tsx", file }
+				end
+				if vim.fn.executable("ts-node") == 1 then
+					return { "ts-node", file }
+				end
+				if vim.fn.executable("deno") == 1 then
+					return { "deno", "run", file }
+				end
+			end,
+			sh = function()
+				return { "bash", file }
+			end,
+			bash = function()
+				return { "bash", file }
+			end,
+			zsh = function()
+				return { "zsh", file }
+			end,
+			ruby = function()
+				return { "ruby", file }
+			end,
+			perl = function()
+				return { "perl", file }
+			end,
+			php = function()
+				return { "php", file }
+			end,
+			r = function()
+				return { "Rscript", file }
+			end,
+			julia = function()
+				return { "julia", file }
+			end,
+			go = function()
+				return { "go", "run", file }
+			end,
 		}
 		local f = map[ft]
 		cmd = f and f() or (vim.fn.executable(file) == 1 and { file } or nil)
@@ -79,7 +111,6 @@ local function run_current_file_in_split()
 	vim.cmd("wincmd p")
 	vim.o.equalalways = was_equalalways
 end
-
 
 vim.api.nvim_create_user_command("RunFile", run_current_file_in_split, {})
 

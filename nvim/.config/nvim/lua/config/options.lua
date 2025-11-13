@@ -1,3 +1,4 @@
+local style = require("utils").get_settings()
 local vo = vim.opt
 local vg = vim.g
 local vc = vim.cmd
@@ -5,14 +6,15 @@ local vc = vim.cmd
 vo.number = true
 vo.cursorcolumn = false
 vo.relativenumber = true
-vo.signcolumn = "yes"
+vo.signcolumn = "yes:2"
 vo.termguicolors = true
 vo.scrolloff = 4
 vo.textwidth = 80
+vo.showtabline = 2
 
 vo.undofile = true
 vo.swapfile = false
-vo.winborder = "solid"
+vo.winborder = style.border
 vo.splitright = true
 vo.clipboard = "unnamedplus"
 vg.clipboard = "wl-copy"
@@ -37,3 +39,6 @@ vo.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.guicursor = "n-v-c:block,i-ci-r:block-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,o:hor400-Cursor"
 
 vc("set updatetime=750")
+
+vim.g.tundra_biome = "custom"
+vim.cmd("colorscheme tundra")

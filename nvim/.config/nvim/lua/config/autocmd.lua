@@ -1,3 +1,4 @@
+-- Highlight yanked text
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
 	pattern = "*",
@@ -7,50 +8,22 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	pattern = "*.tmpl",
-	callback = function(args)
-		local name = vim.api.nvim_buf_get_name(args.buf)
-		local base = name:gsub("%.tmpl$", "")
-		-- try Neovim's own detector on the stripped name (if available)
-		local ft = (vim.filetype and vim.filetype.match) and vim.filetype.match({ filename = base, buf = args.buf })
-			or nil
-
-		-- fallback: derive from the last extension of the stripped name
-		if not ft then
-			local ext = base:match("%.([%w]+)$")
-			local map = {
-				yml = "yaml",
-				ini = "dosini",
-				md = "markdown",
-				h = "c",
-				hpp = "cpp",
-				bash = "sh",
-			}
-			ft = (ext and (map[ext] or ext)) or "text"
-		end
-
-		vim.bo[args.buf].filetype = ft
-	end,
-})
-
+-- Jump to previous cursor position of last session
 vim.api.nvim_create_autocmd("BufReadPost", {
-	group = vim.api.nvim_create_augroup("jump_to_the_last_known_cursor_position", { clear = true }),
-	pattern = { "*" },
-	desc = "When editing a file, always jump to the last known cursor position",
-	callback = function()
-		local line = vim.fn.line("'\"")
-		if
-			line >= 1
-			and line <= vim.fn.line("$")
-			and vim.bo.filetype ~= "commit"
-			and vim.fn.index({ "xxd", "gitrebase" }, vim.bo.filetype) == -1
-		then
-			vim.cmd('normal! g`"')
+	callback = function(args)
+		local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+		local line_count = vim.api.nvim_buf_line_count(args.buf)
+		if mark[1] > 0 and mark[1] <= line_count then
+			vim.api.nvim_win_set_cursor(0, mark)
+			-- defer centering slightly so it's applied after render
+			vim.schedule(function()
+				vim.cmd("normal! zz")
+			end)
 		end
 	end,
 })
 
+-- close built-in buffers with q
 vim.api.nvim_create_autocmd("FileType", {
 	group = vim.api.nvim_create_augroup("close_with_q", { clear = true }),
 	desc = "Close with <q>",
@@ -64,31 +37,25 @@ vim.api.nvim_create_autocmd("FileType", {
 		"quickfix-list",
 		"quickfix",
 		"diagnostics",
+		"oil",
 	},
 	callback = function(args)
 		vim.keymap.set("n", "q", "<cmd>quit<cr>", { buffer = args.buf })
 	end,
 })
 
+-- Natural typing format options
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "*",
 	callback = function()
-		vim.opt_local.formatoptions:remove({ "r", "o" })
+		vim.opt_local.formatoptions:remove({ "c", "r", "o" })
 	end,
 })
 
-local function get_scr_width()
-	local width = vim.api.nvim_win_get_width(0)
-	local ft = vim.bo.filetype
-
-	local line = width - 5
-	if ft == "typst" and width > 85 then
-		line = 80
-	end
-	vim.cmd("set textwidth=" .. line)
-end
-
-vim.api.nvim_command("autocmd VimResized * lua get_scr_width()")
+-- auto resize splits when the terminal's window is resized
+vim.api.nvim_create_autocmd("VimResized", {
+	command = "wincmd =",
+})
 
 vim.api.nvim_create_autocmd("VimEnter", {
 	callback = function()

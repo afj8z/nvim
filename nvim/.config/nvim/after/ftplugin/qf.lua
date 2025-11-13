@@ -3,12 +3,10 @@ local function adjust_height(min_height, max_height)
 	vim.cmd(height .. "wincmd_")
 end
 
-adjust_height(3, 9)
+adjust_height(2, 9)
 
-vim.opt_local.cursorline = true
-vim.opt_local.number = false
 vim.opt_local.relativenumber = false
 vim.opt_local.hlsearch = false
 
-vim.api.nvim_set_hl(0, "Search", {})
-vim.api.nvim_set_hl(0, "QuickFixLine", {})
+-- vim.api.nvim_set_hl(0, "Search", {})
+-- vim.api.nvim_set_hl(0, "QuickFixLine", {})

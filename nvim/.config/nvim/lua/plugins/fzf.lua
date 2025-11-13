@@ -3,57 +3,52 @@ vim.pack.add({
 })
 
 local path = require("fzf-lua.path")
+local colors = require("colors")
 
-get_line_and_path = function(selected, opts)
-	local file_and_path = path.entry_to_file(selected[1], opts).stripped
-	vim.print(file_and_path)
-	if vim.o.clipboard == "unnamed" then
-		vim.fn.setreg([[*]], file_and_path)
-	elseif vim.o.clipboard == "unnamedplus" then
-		vim.fn.setreg([[+]], file_and_path)
-	else
-		vim.fn.setreg([["]], file_and_path)
-	end
-	-- copy to the yank register regardless
-	vim.fn.setreg([[0]], file_and_path)
-end
+local tabline_h = (vim.o.showtabline > 0 and 1 or 0)
+local statusline_h = (vim.o.laststatus > 0 and 1 or 0)
+local cmdline_h = vim.o.cmdheight
+
+local available_height = vim.o.lines - tabline_h - statusline_h - cmdline_h
+local start_row = tabline_h
+
+local win_height = available_height
+local win_width = vim.o.columns
 
 require("fzf-lua").setup({
-	"border-fused",
+	-- "telescope",
 	fzf_opts = {
 		["--wrap"] = false,
-		["--layout"] = "default",
+		["--layout"] = "reverse",
 		["ansi"] = false,
+		["--list-label"] = " Results ",
 	},
 	previewers = {
 		builtin = {
 			syntax_limit_b = -102400, -- 100KB limit on highlighting files
+			treesitter = {
+				enabled = false,
+			},
 		},
 	},
 	winopts = {
 		preview = {
-			default = "bat_native",
 			wrap = false,
 			layout = "horizontal",
-			horizontal = "right:50%",
+			horizontal = "right:40%",
+			border = "single",
 		},
-		border = "none",
+		height = win_height,
+		width = win_width,
 		backdrop = 100,
-		height = 1,
-		width = 1,
+		border = "none",
 	},
-	fzf_colors = {
-		["bg"] = { { "FloatBorder" } },
-		["gutter"] = "-1",
-	},
+
+	fzf_colors = true,
 	grep = {
 		rg_glob = true,
-		-- first returned string is the new search query
-		-- second returned string are (optional) additional rg flags
-		-- @return string, string?
 		rg_glob_fn = function(query, opts)
 			local regex, flags = query:match("^(.-)%s%-%-(.*)$")
-			-- If no separator is detected will return the original query
 			return (regex or query), flags
 		end,
 	},
@@ -63,21 +58,62 @@ require("fzf-lua").setup({
 		color_icons = false,
 		formatter = "path.filename_first",
 	},
-	actions = {
-		files = {
+	keymap = {
+		fzf = {
 			true,
-			["ctrl-y"] = { fn = get_line_and_path, exec_silent = true },
+			-- Use <c-q> to select all items and add them to the quickfix list
+			["ctrl-q"] = "select-all+accept",
 		},
+	},
+	fzf_args = {
+		'--style="full"',
+		'--input-border="sharp" ',
+		'--list-border="sharp" ',
+		'--padding="0" ',
+		'--margin="0" ',
+		'--scrollbar="" ',
+		'--footer-border="sharp" ',
+		'--header-border="sharp"',
+		"--color=gutter:-1",
 	},
 })
 
-vim.keymap.set("n", "<leader>ff", require("fzf-lua").files, { desc = "FZF Files" })
-vim.keymap.set("n", "<leader>fg", require("fzf-lua").live_grep, { desc = "FZF Grep" })
-vim.keymap.set("n", "<leader>fb", require("fzf-lua").buffers, { desc = "FZF Buffers" })
-vim.keymap.set("n", "<leader>fh", require("fzf-lua").helptags, { desc = "Help Tags" })
-vim.keymap.set("n", "<leader>fm", require("fzf-lua").marks, { desc = "Marks" })
-vim.keymap.set("n", "<leader>fr", require("fzf-lua").registers, { desc = "Registers" })
-vim.keymap.set("n", "<leader>fF", require("fzf-lua").resume, { desc = "FZF Resume" })
-vim.keymap.set("n", "<leader>fu", require("fzf-lua").changes, { desc = "FZF Changes" })
-vim.keymap.set("n", "<leader>ft", require("fzf-lua").tmux_buffers, { desc = "FZF Tmux" })
-vim.keymap.set("n", "<leader>fv", ":lua require('fzf-lua').files({ cwd = '~/.config/nvim' })<CR>")
+vim.api.nvim_set_hl(0, "FzfLuaBorder", { link = "FloatBorder" })
+vim.api.nvim_set_hl(0, "FzfLuaTitle", { link = "FloatBorder" })
+vim.api.nvim_set_hl(0, "FzfLuaFzfGutter", { link = "Normal" })
+
+local fzf_lua = require("fzf-lua")
+local nmap = function(lhs, rhs, opt)
+	vim.keymap.set("n", lhs, rhs, opt)
+end
+
+nmap("<leader>ff", function()
+	fzf_lua.files({ fzf_opts = { ["--input-label"] = " Files " } })
+end, { desc = "FZF Files" })
+nmap("<leader>fg", function()
+	fzf_lua.live_grep({ fzf_opts = { ["--input-label"] = " Grep " } })
+end, { desc = "FZF Grep" })
+nmap("<leader>fb", function()
+	fzf_lua.buffers({ fzf_opts = { ["--input-label"] = " Buffers " } })
+end, { desc = "FZF Buffers" })
+nmap("<leader>fh", function()
+	fzf_lua.helptags({ fzf_opts = { ["--input-label"] = " Helptags " } })
+end, { desc = "Help Tags" })
+nmap("<leader>fm", function()
+	fzf_lua.marks({ fzf_opts = { ["--input-label"] = " Marks " } })
+end, { desc = "Marks" })
+nmap("<leader>fr", function()
+	fzf_lua.registers({ fzf_opts = { ["--input-label"] = " Registers " } })
+end, { desc = "Registers" })
+nmap("<leader>fF", function()
+	fzf_lua.resume({ fzf_opts = { ["--input-label"] = " Resume " } })
+end, { desc = "FZF Resume" })
+nmap("<leader>fu", function()
+	fzf_lua.changes({ fzf_opts = { ["--input-label"] = " Changes " } })
+end, { desc = "FZF Changes" })
+nmap("<leader>ft", function()
+	fzf_lua.tmux_buffers({ fzf_opts = { ["--input-label"] = " Tmux " } })
+end, { desc = "FZF Tmux" })
+nmap("<leader>fv", function()
+	fzf_lua.files({ cwd = "~/.config/nvim", fzf_opts = { ["--input-label"] = " Nvim Config " } })
+end)
