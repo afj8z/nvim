@@ -7,6 +7,6 @@ require("utils").load_modules("plugins", {
 	"runfile",
 	"fzf",
 	"colorize",
-	"npairs",
 	"bracketm",
+	"copilot",
 })
