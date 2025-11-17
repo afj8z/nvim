@@ -33,8 +33,13 @@ nmap("<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { sile
 -- clear highlights
 map({ "n", "v", "x" }, "<leader>/", ":noh<CR>", { silent = true })
 
-nmap("<leader>e", "<cmd>tabnew | Oil<CR>", { silent = true }) --!TODO no new tab if file is [No Name]
-nmap("<leader>E", "<cmd>lua local dir = vim.fn.expand('%:p:h'); vim.cmd('tabnew | Oil ' .. dir)<CR>", { silent = true }) --!TODO no new tab if file is [No Name]
+nmap("<leader>e", "<cmd>Oil<CR>", { silent = true })
+nmap(
+	"<leader>te",
+	"<cmd>lua local dir = vim.fn.expand('%:p:h'); vim.cmd('tabnew | Oil ' .. dir)<CR>",
+	{ silent = true }
+) --!TODO no new tab if file is [No Name]
+nmap("<leader>E", "<cmd>tabnew | Oil<CR>", { silent = true })
 nmap("<leader>lf", vim.lsp.buf.format)
 
 -- buffer nav
@@ -43,6 +48,19 @@ nmap("<leader>bp", ":bprevious<CR>", { desc = "Previous buffer" })
 nmap("<leader>bd", ":bdelete<CR>", { desc = "Previous buffer" })
 nmap("<leader>bb", ":e #<CR>")
 nmap("<leader>bs", ":vert sf #<CR>")
+
+-- tab nav
+for i = 1, 8 do
+	map({ "n", "t" }, "<Leader>" .. i, "<Cmd>tabnext " .. i .. "<CR>")
+end
+
+nmap("<leader>td", "<cmd>tabclose<CR>")
+
+-- win resizing
+nmap("<leader>>", "<cmd>vertical resize +8<CR>")
+nmap("<leader><", "<cmd>vertical resize -8<CR>")
+nmap("<leader>-", "<cmd>resize +5<CR>")
+nmap("<leader>+", "<cmd>resize -5<CR>")
 
 -- improve commands with motions
 nmap("n", "nzzzv")
@@ -116,4 +134,4 @@ map({ "n", "v" }, "<leader>r", keyfunc.surround_motion_with, {
 	desc = "Surround motion with character",
 })
 
-vim.keymap.set("n", "<leader>2", metaf.toggle_notes, { desc = "Toggle notes" })
+-- vim.keymap.set("n", "<leader>2", metaf.toggle_notes, { desc = "Toggle notes" })

@@ -81,22 +81,6 @@ function M.expand_equation(args, parent)
 	return sn(nil, { t(final_text) })
 end
 
--- function M.which_math_mode(args, parent)
--- 	local input = parent.captures[1]
--- 	if input == " " then
--- 		return sn(nil, {
--- 			t("$"),
--- 			t({ "", "		" }),
--- 			i(1),
--- 			t({ "", "$", "" }),
--- 			i(2),
--- 		})
--- 	else
--- 		return sn(nil, { t("$"), t(input), i(1), t("$"), f() })
--- 	end
--- end
-
--- Your main snippet function
 function M.which_math_mode(args, parent)
 	local input = parent.captures[1]
 	if input == " " then
@@ -114,7 +98,7 @@ function M.which_math_mode(args, parent)
 			t(input),
 			i(1),
 			t("$"),
-			i(0), -- The exit node
+			i(0),
 		})
 	end
 end
@@ -315,13 +299,11 @@ function M.sub_symbol(args, parent, _, index, map)
 end
 
 function M.build_screenshot_node(args, parent_snippet)
-	-- 1. Check filetype
 	local ftype = vim.bo.filetype
 	if ftype ~= "typst" then
 		return sn(nil, { t("ERROR: Not a typst file") })
 	end
 
-	-- 2. Get the snip name
 	local filePath = vim.fs.normalize("~/.typst/local/snips/0.1.0/snipmap.csv")
 	local lastLine = vim.fn.system({ "awk", "END{print}", filePath })
 
@@ -330,12 +312,8 @@ function M.build_screenshot_node(args, parent_snippet)
 	end
 	local snip = lastLine:gsub(",.*$", "")
 
-	-- 3. Generate a unique name
 	local unique_name = "fig_" .. os.date("%Y%m%d%H%M%S")
 
-	-- 4. Build the nodes (NO i(0) here)
-	-- The variables 'sn', 't', and 'i' are already
-	-- defined at the top of your file.
 	local nodes = {
 		t("#let " .. unique_name .. ' = snap(snip("' .. snip .. '"), "'),
 		i(1, '"Caption"'), -- First stop
@@ -346,10 +324,88 @@ function M.build_screenshot_node(args, parent_snippet)
 		t({ "],", "    column-gutter: 1em,", ")" }),
 	}
 
-	-- 5. Return the snippet_node.
-	-- LuaSnip will jump 1 -> 2 -> 3, then exit
-	-- and jump to the i(0) in the main snippet.
 	return sn(nil, nodes)
+end
+
+local function get_parent_dir_name()
+	-- Get the full path of the current buffer's file
+	local file_path = vim.api.nvim_buf_get_name(0)
+
+	if file_path == "" then
+		return nil
+	end
+
+	local dir_path = vim.fn.fnamemodify(file_path, ":p:h")
+
+	if dir_path == vim.fn.fnamemodify(dir_path, ":p:h:h") then
+		return dir_path
+	end
+
+	local parent_dir_name = vim.fn.fnamemodify(dir_path, ":t")
+
+	return parent_dir_name
+end
+
+function M.generate_template(_, _)
+	local dir_path = get_parent_dir_name()
+	local dir_map = {
+		["emat"] = "Grundl. Mathematik WW",
+		["cogo"] = "Corporate Governance",
+		["ams"] = "All. Meth. Statistik",
+		["e101"] = "Einführung VWL",
+		["macr"] = "Makroökonomik",
+	}
+	local dir_name = dir_map[dir_path]
+	return sn(nil, { t(dir_name) })
+end
+
+function M.get_dynamic_project_name()
+	local filename = vim.fn.expand("%:t")
+
+	local dynamic_templates = {
+		["^hw(%d+)%.?.*$"] = "Homework %s",
+		["^lec(%d+)%.?.*$"] = "Lecture %s",
+		["^q(%d+)%.?.*$"] = "Quiz %s",
+		["^abg(%d+)%.?.*$"] = "Abgabe %s",
+	}
+
+	for pattern, template in pairs(dynamic_templates) do
+		local captured_number = string.match(filename, pattern)
+
+		if captured_number then
+			return string.format(template, captured_number)
+		end
+	end
+
+	local exact_names = {
+		["format"] = "Formatting Code",
+		["README"] = "Project Overview",
+		["main"] = "Main Entry Point",
+	}
+
+	local base_name = vim.fn.fnamemodify(filename, ":r")
+
+	for name, result in pairs(exact_names) do
+		if base_name == name then
+			return result
+		end
+	end
+
+	local file_path = vim.api.nvim_buf_get_name(0)
+
+	if file_path == "" then
+		return nil
+	end
+
+	local dir_path = vim.fn.fnamemodify(file_path, ":p:h")
+
+	if dir_path == vim.fn.fnamemodify(dir_path, ":p:h:h") then
+		return dir_path
+	end
+
+	local parent_dir_name = vim.fn.fnamemodify(dir_path, ":t")
+
+	return parent_dir_name
 end
 
 return M

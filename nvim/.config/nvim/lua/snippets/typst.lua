@@ -30,23 +30,43 @@ local testarg = cstm_gen.test_arg
 local single_probability = cstm_gen.single_probability
 local sub_symbol = cstm_gen.sub_symbol
 local build_screenshot_node = cstm_gen.build_screenshot_node
+local generate_template = cstm_gen.generate_template
+local dynamic_file_name = cstm_gen.get_dynamic_project_name
 
 local math_snippet = mode.math_snippet
 local not_math_s = mode.not_math_s
 
 local mapped_snippets = require("snippets.util.maps").return_map()
 
-return {}, {
+return {
 
-	-- add "()" to _
-	math_snippet(
-		"([^%s^J])J",
-		fmt("{}_({}) ", { f(function(_, snip)
-			return snip.captures[1]
-		end), i(1) }),
-		{ regTrig = true, wordTrig = false }
+	not_math_s(
+		"sepage",
+		fmta(
+			[[
+		#import "@local/conf:0.1.0": *
+		#import "@local/boxes:0.1.0": *
+
+		#show: init_pageless.with(
+			norm: 11pt,
+			preset: "Aidan",
+			title: "<>",
+			subtitle: "<>",
+			lang: (setting: "de"),
+			color_theme: "light",
+			accent: (switch: true),
+			q_count: 0,
+		)
+		<>
+		]],
+			{
+				f(dynamic_file_name),
+				d(1, generate_template),
+				i(0),
+			}
+		)
 	),
-
+}, {
 	math_snippet(
 		"arr([%a])",
 		fmt("arrow.{} ", {
@@ -56,28 +76,11 @@ return {}, {
 		}),
 		{ regTrig = true, wordTrig = false }
 	),
-	-- add "()" to ^
-	math_snippet(
-		"([^%s^K])K",
-		fmt("{}^({}) ", { f(function(_, snip)
-			return snip.captures[1]
-		end), i(1) }),
-		{ regTrig = true, wordTrig = false }
-	),
-
-	-- add "()" to ^
-	math_snippet(
-		"(%w)^",
-		fmt("{}^({}) ", { f(function(_, snip)
-			return snip.captures[1]
-		end), i(1) }),
-		{ regTrig = true, wordTrig = false }
-	),
 
 	-- ^asterisk (max etc)
 	math_snippet(
 		"([%a%)%]%}])%*%*",
-		fmt("{}^(*) {} ", { f(function(_, snip)
+		fmt("{}^(*) {}", { f(function(_, snip)
 			return snip.captures[1]
 		end), i(0) }),
 		{ regTrig = true, wordTrig = false }
@@ -90,7 +93,6 @@ return {}, {
 		end), i(0) }),
 		{ regTrig = true }
 	),
-	-- matrix type
 	math_snippet(
 		"([%a%d])([%a%d])mm",
 		fmt("({} times {}) {}", {
@@ -106,7 +108,7 @@ return {}, {
 	),
 	-- transposed matrix
 	math_snippet(
-		"([a-zA-Z])TT",
+		"([a-zA-Z%)%]%}])TT",
 		fmt("{}^(T) {}", { f(function(_, snip)
 			return snip.captures[1]
 		end), i(0) }),
@@ -114,19 +116,15 @@ return {}, {
 	),
 
 	math_snippet("kk", fmt("^({}) ", { i(1) }), { wordTrig = false }),
-
 	math_snippet("jj", fmt("_({}) ", { i(1) }), { wordTrig = false }),
-
 	math_snippet("JK", fmt("_({})^({}) ", { i(1), i(2) }), { wordTrig = false }),
 
 	math_snippet("int", fmt("integral_({})^({})", { i(1), i(2) })),
-
 	math_snippet("dvv", fmt("mat({}) dot vec({})", { i(1), i(2) })),
 
 	math_snippet(
 		"vv(%a+) ",
 		fmt("vec({}) {}", {
-			-- Your d-node definition is correct.
 			d(1, return_capture, {}, { user_args = { "comma" } }),
 			i(2),
 		}),
@@ -135,8 +133,7 @@ return {}, {
 
 	math_snippet(
 		"fu([%a%d]*) ",
-		fmt("f_({}) {}", {
-			-- Your d-node definition is correct.
+		fmt("f_({})({}) ", {
 			d(1, return_capture, {}, { user_args = { "comma_num_down" } }),
 			i(2),
 		}),
@@ -145,20 +142,19 @@ return {}, {
 	math_snippet(
 		"avv(%a+) ",
 		fmt("vec({}) {}", {
-			-- Your d-node definition is correct.
 			d(1, return_capture, {}, { user_args = { "space" } }),
 			i(2),
 		}),
 		{ regTrig = true }
 	),
 
-	math_snippet("diff", fmt("diff/diff({})", { i(1) })),
+	math_snippet("diff", fmt("diff/diff({}) ", { i(1) })),
 
-	math_snippet("pde", fmt("partial/partial{}", { i(1) })),
+	math_snippet("pde", fmt("partial/partial{} ", { i(1) })),
 
-	math_snippet("usr", { t("^(2)") }),
+	math_snippet("usr", { t("^(2)") }, { wordTrig = true }),
 
-	math_snippet("ucb", { t("^(3)") }),
+	math_snippet("ucb", { t("^(3)") }, { wordTrig = true }),
 
 	math_snippet("bar", fmt("bar({})", { i(1) })),
 
@@ -166,25 +162,25 @@ return {}, {
 
 	math_snippet("vec", fmt("vec({})", { i(1) })),
 
-	math_snippet("sqrt", fmt("sqrt({})", { i(1) })),
+	math_snippet("sqr", fmt("sqrt({}) ", { i(1) })),
 
-	math_snippet("sum", fmt("sum_({})^({})", { i(1), i(2) })),
+	math_snippet("sum", fmt("sum_({})^({}) ", { i(1), i(2) })),
 
-	math_snippet("lim", fmt("lim_({})", { i(1, "n -> oo") })),
+	math_snippet("lim", fmt("lim_({}) ", { i(1, "n -> oo") })),
 
-	math_snippet("prod", fmt("product_({})^({})", { i(1, "i=1"), i(2, "n") })),
+	math_snippet("prod", fmt("product_({})^({}) ", { i(1, "i=1"), i(2, "n") })),
 
-	math_snippet("ob", fmt("overbrace({}, {})", { i(1), i(2) })),
+	math_snippet("ob", fmt("overbrace({}, {}) ", { i(1), i(2) })),
 
-	math_snippet("ub", fmt("underbrace({}, {})", { i(1), i(2) })),
+	math_snippet("ub", fmt("underbrace({}, {}) ", { i(1), i(2) })),
 
-	math_snippet("ol", fmt("overline({})", { i(1) })),
+	math_snippet("ol", fmt("overline({}) ", { i(1) })),
 
-	math_snippet("abs", fmt("abs({})", { i(1) })),
+	math_snippet("abs", fmt("abs({}) ", { i(1) })),
 
-	math_snippet("bin", fmt("binom({}, {})", { i(1, "n"), i(2, "k") })),
+	math_snippet("bin", fmt("binom({}, {}) ", { i(1, "n"), i(2, "k") })),
 
-	math_snippet("rng", fmt("underbrace({}, {})", { i(1), i(2) })),
+	math_snippet("rng", fmt("underbrace({}, {}) ", { i(1), i(2) })),
 
 	math_snippet("([a-zA-Z])(%d+) ", { d(1, format_subscript) }, { regTrig = true, wordTrig = false }),
 
@@ -194,9 +190,9 @@ return {}, {
 
 	math_snippet(
 		"(.*[%)]?[^%w%a])ff",
-		fmt("{}, {})", {
+		fmt("{}, {}) ", {
 			d(1, frac_logic),
-			i(0),
+			i(2),
 		}),
 
 		{ regTrig = true, wordTrig = false }

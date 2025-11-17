@@ -1,5 +1,7 @@
 local ls = require("luasnip")
 local t = ls.text_node
+local f = ls.function_node
+local fmt = require("luasnip.extras.fmt").fmt
 local math_snippet = require("snippets.util.logic").math_snippet
 local M = {}
 
@@ -18,7 +20,7 @@ local greek_map = {
 	[",m"] = "mu",
 	[",n"] = "nu",
 	[",x"] = "xi",
-	[",o"] = "omicron",
+	[",o"] = "omega",
 	[",p"] = "pi",
 	[",r"] = "rho",
 	[",s"] = "sigma",
@@ -44,7 +46,7 @@ local greek_map = {
 local operator_map = {
 	["imp"] = "==>",
 	["to"] = "->",
-	["lrar"] = "<=>",
+	["iff"] = "<=>",
 	["larr"] = "-->",
 	["larl"] = "<--",
 	["map"] = "mapsto",
@@ -54,7 +56,7 @@ local operator_map = {
 	["uni"] = "union",
 	["sec"] = "inter",
 	["diam"] = "diameter",
-	["..."] = "dots.c",
+	["%.%.%."] = "dots.c",
 	["xx"] = "dot",
 	["tt"] = "times",
 	["inf"] = "oo",
@@ -68,11 +70,11 @@ local operator_map = {
 local mapped_snippets = {}
 
 for trigger, expansion in pairs(operator_map) do
-	table.insert(mapped_snippets, math_snippet(trigger, { t(expansion) }, { wordTrig = false }))
+	table.insert(mapped_snippets, math_snippet(trigger, t(expansion .. " "), { wordTrig = true }))
 end
 
 for trigger, expansion in pairs(greek_map) do
-	table.insert(mapped_snippets, math_snippet(trigger, { t(expansion) }, { wordTrig = true }))
+	table.insert(mapped_snippets, math_snippet(trigger, { t(expansion .. " ") }, { wordTrig = true }))
 end
 
 function M.return_map()

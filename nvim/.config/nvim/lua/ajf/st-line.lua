@@ -1,10 +1,27 @@
 local M = {}
 local colors = require("colors")
-
 local icons = require("ajf.icons")
+local internal_fts = {
+	help = true,
+	checkhealth = true,
+	man = true,
+	lazy = true,
+	DiffviewFiles = true,
+	DiffviewFileHistory = true,
+	OverseerForm = true,
+	OverseerList = true,
+	["ccc-ui"] = true,
+	["dap-view"] = true,
+	["grug-far"] = true,
+	codecompanion = true,
+	lazyterm = true,
+	minifiles = true,
+	TelescopePrompt = true,
+}
 
 vim.g.qf_disable_statusline = 1
 
+--- Remove highlight groups
 ---@param str string
 ---@return string
 local function strip_highlights(str)
@@ -178,7 +195,7 @@ function M.filename_inactive()
 	if fname == "" or fname == nil then
 		return "[No Name]"
 	end
-	return string.format("%%#StatusLineNC# %s ", fname)
+	return string.format("%%#StatusLineNC#%s ", fname)
 end
 
 --- The current line, total line count, and column position.
@@ -193,24 +210,6 @@ function M.position_component()
 		string.format("%%#StatuslineItalic#/%d-%d", line_count, col),
 	})
 end
-
-local internal_fts = {
-	help = true,
-	checkhealth = true,
-	man = true,
-	lazy = true,
-	DiffviewFiles = true,
-	DiffviewFileHistory = true,
-	OverseerForm = true,
-	OverseerList = true,
-	["ccc-ui"] = true,
-	["dap-view"] = true,
-	["grug-far"] = true,
-	codecompanion = true,
-	lazyterm = true,
-	minifiles = true,
-	TelescopePrompt = true,
-}
 
 --- Renders the statusline for quickfix/location lists.
 ---@return string
@@ -232,9 +231,9 @@ function M.render_qf()
 
 	local pos_text = strip_highlights(pos_component)
 
-	-- 3. Combine into a single string.format call.
+	-- Combine into a single string.format call.
 	--    "  " is the non-breaking space separator from your concat_components
-	return string.format("%%#StatusLineReversed# %s %%=%s %%*", title, pos_text)
+	return string.format("%%#StatusLineReversed#%s %%=%s %%*", title, pos_text)
 end
 
 --- Renders a minimal statusline for internal buffers (help, lazy, etc.)
@@ -246,7 +245,7 @@ function M.render_internal()
 	local pos_text = strip_highlights(pos_component)
 	local ft_text = strip_highlights(ft_component)
 
-	-- 3. Combine into a single string.format call
+	-- Combine into a single string.format call
 	return string.format("%%#StatusLineReversed# %s %%=%s %%*", ft_text, pos_text)
 end
 
@@ -255,30 +254,30 @@ end
 function M.render()
 	local ft = vim.bo.filetype
 
-	-- 1. Oil buffer
+	-- Oil buffer
 	if ft == "oil" or ft == "fzf" then
 		local path = vim.fn.expand("%:p")
-		return string.format("%%#StatusLineReversed# %s %%= %%*", path)
+		return string.format("%%#StatusLineReversed#%s %%= %%*", path)
 	end
 
-	-- 2. Quickfix / Location List
+	-- Quickfix / Location List
 	if ft == "qf" then
 		local comps = table.concat({
 			concat_components({
 				M.render_qf(),
 			}),
 		})
-		return string.format("%%#StatusLineReversed# %s %%*", comps)
+		return string.format("%%#StatusLineReversed#%s %%*", comps)
 	end
 
-	-- 3. Other internal buffers (help, lazy, checkhealth, etc.)
+	-- Other internal buffers (help, lazy, checkhealth, etc.)
 	if internal_fts[ft] then
 		local comps = table.concat({
 			concat_components({
 				M.render_internal(), -- Get the 'help' icon/name
 			}),
 		})
-		return string.format("%%#StatusLineReversed# %s %%*", comps)
+		return string.format("%%#StatusLineReversed#%s %%*", comps)
 	end
 
 	return table.concat({
@@ -334,7 +333,7 @@ function M.render_global()
 	else
 		local bufid = vim.api.nvim_win_get_buf(winid)
 		if not bufid or not vim.api.nvim_buf_is_valid(bufid) then
-			return "%#StatusLineNC# [No Buffer]"
+			return "%#StatusLineNC#[No Buffer]"
 		end
 		local fname = vim.api.nvim_buf_get_name(bufid)
 		if fname == "" or fname == nil then
@@ -342,7 +341,7 @@ function M.render_global()
 		else
 			fname = vim.fn.fnamemodify(fname, ":t") -- Get just the filename
 		end
-		return string.format("%%#StatusLineNC# %s ", fname)
+		return string.format("%%#StatusLineNC#%s ", fname)
 	end
 end
 
