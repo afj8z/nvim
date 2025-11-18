@@ -1,3 +1,9 @@
+require("nIM").setup({
+	run_file = {
+		keymap = "<leader>a",
+	},
+})
+
 require("utils").load_modules("plugins", {
 	"oil",
 	"ts",
@@ -7,6 +13,6 @@ require("utils").load_modules("plugins", {
 	"runfile",
 	"fzf",
 	"colorize",
-	"bracketm",
+	-- "bracketm",
 	"copilot",
 })

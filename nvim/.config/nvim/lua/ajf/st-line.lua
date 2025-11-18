@@ -1,3 +1,5 @@
+-- inspired by https://github.com/MariaSolOs/dotfiles/blob/main/.config/nvim/lua/statusline.lua
+-- much of it copied and adjusted for my case
 local M = {}
 local colors = require("colors")
 local icons = require("ajf.icons")
@@ -21,7 +23,7 @@ local internal_fts = {
 
 vim.g.qf_disable_statusline = 1
 
---- Remove highlight groups
+---Remove highlight groups
 ---@param str string
 ---@return string
 local function strip_highlights(str)
@@ -46,11 +48,10 @@ end
 local progress_status = {}
 
 vim.api.nvim_create_autocmd("LspProgress", {
-	group = vim.api.nvim_create_augroup("mariasolos/statusline", { clear = true }),
+	group = vim.api.nvim_create_augroup("stline", { clear = true }),
 	desc = "Update LSP progress in statusline",
 	pattern = { "begin", "end" },
 	callback = function(args)
-		-- This should in theory never happen, but I've seen weird errors.
 		if not args.data then
 			return
 		end
@@ -78,7 +79,7 @@ vim.api.nvim_create_autocmd("LspProgress", {
 	end,
 })
 
--- Statusline Component functions
+--Statusline Component functions
 --- @return string
 function M.lsp_active()
 	if not rawget(vim, "lsp") then
@@ -90,11 +91,12 @@ function M.lsp_active()
 		ruff = true,
 		stylua = true,
 	}
+
 	local current_buf = vim.api.nvim_get_current_buf()
 	local clients = vim.lsp.get_clients({ bufnr = current_buf })
 
 	if #clients == 0 then
-		return ""
+		return "[No LSP]"
 	end
 
 	local client_names = {}
@@ -211,7 +213,7 @@ function M.position_component()
 	})
 end
 
---- Renders the statusline for quickfix/location lists.
+---Renders the statusline for quickfix/location lists.
 ---@return string
 function M.render_qf()
 	local wininfo = vim.fn.getwininfo(vim.fn.win_getid())[1]
@@ -231,12 +233,11 @@ function M.render_qf()
 
 	local pos_text = strip_highlights(pos_component)
 
-	-- Combine into a single string.format call.
-	--    "  " is the non-breaking space separator from your concat_components
+	-- Combine into a single string.format call
 	return string.format("%%#StatusLineReversed#%s %%=%s %%*", title, pos_text)
 end
 
---- Renders a minimal statusline for internal buffers (help, lazy, etc.)
+---Renders a minimal statusline for internal buffers (help, lazy, etc.)
 ---@return string
 function M.render_internal()
 	local ft_component = M.filetype_component()
@@ -246,10 +247,10 @@ function M.render_internal()
 	local ft_text = strip_highlights(ft_component)
 
 	-- Combine into a single string.format call
-	return string.format("%%#StatusLineReversed# %s %%=%s %%*", ft_text, pos_text)
+	return string.format("%%#StatusLineReversed#%s %%=%s %%*", ft_text, pos_text)
 end
 
---- Renders the statusline.
+---Renders the statusline
 ---@return string
 function M.render()
 	local ft = vim.bo.filetype
@@ -296,7 +297,7 @@ function M.render()
 	})
 end
 
---- Renders the inactive statusline.
+---Renders the inactive statusline.
 ---@return string
 function M.render_inactive()
 	---@return string
@@ -306,26 +307,12 @@ function M.render_inactive()
 	})
 end
 
--- vim.api.nvim_exec(
--- 	[[
---   augroup Statusline
---   au!
---   au WinEnter,BufEnter * setlocal statusline=%!v:lua.require'ajf.st-line'.render()
---   au WinLeave,BufLeave * setlocal statusline=%!v:lua.require'ajf.st-line'.render_inactive()
---   augroup END
--- ]],
--- 	false
--- )
-
---- Renders the statusline for all windows.
---- Neovim will call this for each window, setting g:statusline_winid
---- to the window-ID it's currently drawing.
+---Renders the statusline for all windows.
+---Neovim will call this for each window, setting g:statusline_winid
+---to the window-ID it's currently drawing.
 function M.render_global()
-	-- Get the window-ID for which this line is being drawn
-
 	local winid = vim.g.statusline_winid
 
-	-- Get the *currently active* window-ID
 	local active_winid = vim.api.nvim_get_current_win()
 
 	if winid == active_winid then
@@ -339,7 +326,7 @@ function M.render_global()
 		if fname == "" or fname == nil then
 			fname = "[No Name]"
 		else
-			fname = vim.fn.fnamemodify(fname, ":t") -- Get just the filename
+			fname = vim.fn.fnamemodify(fname, ":t")
 		end
 		return string.format("%%#StatusLineNC#%s ", fname)
 	end

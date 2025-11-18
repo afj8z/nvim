@@ -26,15 +26,35 @@ local parse = require("luasnip.util.parser").parse_snippet
 local ms = ls.multi_snippet
 local k = require("luasnip.nodes.key_indexer").new_key
 
-return {
-	s("ctrig", t("also loaded!!")),
+local n_pairs = {
+	"''",
+	'""',
+	"()",
+	"{}",
+	"[]",
+	"<>",
 }
--- {
--- 	s("autotrig", t("autotriggered, if enabled")),
--- 	s({ trig = "''", wordTrig = false, snippetType = "autosnippet" }, {
--- 		t("'"), i(1), t("'"),
--- 	}),
--- 	s({ trig = "\"\"", wordTrig = false, snippetType = "autosnippet" }, {
--- 		t("\""), i(1), t("\""),
--- 	}),
--- }
+
+local mapped_snippets = {}
+
+for _, trigger in ipairs(n_pairs) do
+	local start_char = string.sub(trigger, 1, 1)
+	local end_char = string.sub(trigger, 2, 2)
+
+	local pair_snippet = s({ trig = trigger, wordTrig = false, snippetType = "autosnippet" }, {
+		t(start_char),
+		i(1),
+		t(end_char),
+	})
+
+	table.insert(mapped_snippets, pair_snippet)
+end
+
+return {
+	-- Regular snippets
+	s("ctrig", t("also loaded!!")),
+}, {
+	-- Autosnippets
+	s("autotrig", t("autotriggered, if enabled")),
+	unpack(mapped_snippets),
+}

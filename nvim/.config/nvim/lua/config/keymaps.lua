@@ -1,6 +1,4 @@
 local keyfunc = require("ajf.keyfunc")
-local metaf = require("ajf.metafiles")
-local surround = require("ajf.surroundop")
 local map = vim.keymap.set
 
 local nmap = function(lhs, rhs, opt)
@@ -55,6 +53,7 @@ for i = 1, 8 do
 end
 
 nmap("<leader>td", "<cmd>tabclose<CR>")
+nmap("<leader>tt", "<cmd>tabnew<CR>")
 
 -- win resizing
 nmap("<leader>>", "<cmd>vertical resize +8<CR>")
@@ -101,9 +100,6 @@ vmap("<leader>(", "c()<Esc>P", { desc = "Surround with parentheses" })
 vmap("<leader>[", "c[]<Esc>P", { desc = "Surround with brackets" })
 vmap("<leader>{", "c{}<Esc>P", { desc = "Surround with braces" })
 
--- my functions in ../ajf/keyfunc.lua
-nmap("<Leader>m", keyfunc.run_file)
-
 nmap("<Leader>L", keyfunc.ToggleCursorLine)
 
 nmap("<leader>!", keyfunc.open_root_todo, {
@@ -134,4 +130,87 @@ map({ "n", "v" }, "<leader>r", keyfunc.surround_motion_with, {
 	desc = "Surround motion with character",
 })
 
--- vim.keymap.set("n", "<leader>2", metaf.toggle_notes, { desc = "Toggle notes" })
+---Snippet keymaps
+local keymap_snippets_cache = nil
+
+local function create_keymap_snippets()
+	local ls = require("luasnip")
+	local s = ls.snippet
+	local i = ls.insert_node
+	local fmta = require("luasnip.extras.fmt").fmta
+
+	return {
+		["{"] = s(
+			"keymap_{",
+			fmta(
+				-- This template now *starts* with the cursor line.
+				-- The newline is inserted by the keymap function.
+				[[
+<>
+}
+			]],
+				{ i(1) } -- Insert node for the cursor
+			)
+		),
+		["["] = s(
+			"keymap_[",
+			fmta(
+				[[
+<>
+]
+			]],
+				{ i(1) }
+			)
+		),
+		["("] = s(
+			"keymap_(",
+			fmta(
+				[[
+<>
+)
+			]],
+				{ i(1) }
+			)
+		),
+	}
+end
+
+---
+-- Smart <Enter> keymap function.
+---
+local function smart_enter()
+	-- 1. Get char before cursor
+	local col = vim.api.nvim_win_get_cursor(0)[2]
+	if col == 0 then
+		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
+		return
+	end
+	local line = vim.api.nvim_get_current_line()
+	local char_before = line:sub(col, col)
+
+	-- 2. Check if we have a snippet for it
+	if char_before == "{" or char_before == "[" or char_before == "(" then
+		-- 3. Load/get snippets from cache
+		if keymap_snippets_cache == nil then
+			keymap_snippets_cache = create_keymap_snippets()
+		end
+
+		-- 4. Get the specific snippet
+		local snippet_to_expand = keymap_snippets_cache[char_before]
+
+		if snippet_to_expand then
+			-- 5. FIX: Manually insert the newline FIRST
+			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
+			-- 6. NOW expand the snippet on the new line
+			require("luasnip").snip_expand(snippet_to_expand)
+		else
+			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
+		end
+	else
+		-- 7. Not a bracket, just insert a normal newline
+		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
+	end
+end
+
+-- The actual keymap in insert mode (NO expr = true)
+imap("<CR>", smart_enter, { noremap = true })

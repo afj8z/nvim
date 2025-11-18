@@ -1,10 +1,7 @@
+-- lua/ajf/bracket_region.lua
 local M = {}
--- Disable builtin matchparens plugin
-vim.g.loaded_matchparen = 1
-
 local ns = vim.api.nvim_create_namespace("bracket-region")
 
--- map of bracket pairs
 local pairs_map = {
 	["("] = ")",
 	["["] = "]",
@@ -16,21 +13,17 @@ local pairs_map = {
 	[">"] = "<",
 }
 
----Checks if a 1-based buffer position is inside a string or comment.
----Can be called with (lnum, col) or with no args (uses vim.fn.line/col).
----@param lnum number?: 1-based line number (optional)
----@param col number?: 1-based byte column (optional)
----@return boolean: true if inside string/comment, false otherwise
-local function is_in_syntax(lnum, col)
-	local l = lnum or vim.fn.line(".")
-	local c = col or vim.fn.col(".")
-
-	local parser = vim.treesitter.get_parser(0)
-	if not parser then
+--
+---Checks syntax using Tree-sitter.
+---Returns 'false' if parser is unavailable or on error.
+---@return boolean
+local function is_in_syntax_ts(lnum, col)
+	local ok, parser = pcall(vim.treesitter.get_parser, 0)
+	if not ok or not parser then
 		return false
 	end
 
-	local node = vim.treesitter.get_node({ bufnr = 0, pos = { l - 1, c - 1 } })
+	local node = vim.treesitter.get_node({ bufnr = 0, pos = { lnum - 1, col - 1 } })
 	if not node then
 		return false
 	end
@@ -43,11 +36,33 @@ local function is_in_syntax(lnum, col)
 		end
 		current_node = current_node:parent()
 	end
-
 	return false
 end
 
--- return row,col (0-based) of the matching bracket, or nil
+---Checks syntax using legacy synID (fallback).
+---@return integer|nil
+local function is_in_syntax_legacy(lnum, col)
+	local syn_id = vim.fn.synID(lnum, col, 0)
+	local syn_name = vim.fn.synIDattr(syn_id, "name") or ""
+	return string.find(string.lower(syn_name), "string") or string.find(string.lower(syn_name), "comment")
+end
+
+---Dispatches to TS or legacy syntax checker.
+---@param lnum number?: 1-based line (optional, for searchpairpos)
+---@param col number?: 1-based col (optional, for searchpairpos)
+local function is_in_syntax(lnum, col)
+	local l = lnum or vim.fn.line(".")
+	local c = col or vim.fn.col(".")
+
+	local ts_ok, _ = pcall(vim.treesitter.get_parser, 0)
+
+	if ts_ok then
+		return is_in_syntax_ts(l, c)
+	else
+		return is_in_syntax_legacy(l, c)
+	end
+end
+
 local function find_match(row, col, ch)
 	local open_pat, close_pat, flags
 
@@ -114,7 +129,6 @@ function M.highlight_between()
 		return
 	end
 
-	-- Highlight the bracket region
 	local sr, sc, er, ec
 	if ch == "(" or ch == "[" or ch == "{" or ch == "<" then
 		sr, sc = row, col + 1
@@ -138,7 +152,6 @@ function M.highlight_between()
 		})
 	end
 
-	-- Highlight the brackets themselves
 	vim.api.nvim_buf_set_extmark(0, ns, row, col, {
 		end_row = row,
 		end_col = col + 1,
