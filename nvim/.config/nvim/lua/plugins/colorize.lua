@@ -10,12 +10,21 @@ utils.lazy_on_filetype("Colorizer", {
 	"toml",
 	"typst",
 	"kitty",
-}, function()
-	vim.cmd("packadd nvim-colorizer.lua")
-	require("colorizer").setup({
+}, function(args)
+	vim.pack.add({
+		{
+			src = "https://github.com/catgoose/nvim-colorizer.lua",
+		},
+	})
+
+	local colorizer = require("colorizer")
+
+	colorizer.setup({
 		user_default_options = {
 			names = false,
 			css = true,
 		},
 	})
+
+	colorizer.attach_to_buffer(args.buf)
 end)

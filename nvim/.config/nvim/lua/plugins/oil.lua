@@ -3,7 +3,7 @@ vim.pack.add({
 	{ src = "https://github.com/JezerM/oil-lsp-diagnostics.nvim" },
 })
 
-local sym = require("ajf.icons").diagnostics
+local sym = require("ajf.style").icons.diagnostics
 local style = require("ajf.utils").get_settings()
 
 require("oil").setup({

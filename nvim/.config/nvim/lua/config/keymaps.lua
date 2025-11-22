@@ -1,4 +1,4 @@
-local keyfunc = require("ajf.keyfunc")
+local keyfunc = require("ajf.userfunc")
 local utils = require("ajf.utils")
 local map = vim.keymap.set
 local nmap = utils.nmap
@@ -18,7 +18,11 @@ nmap("<leader>Q", "<Cmd>:wqa<CR>")
 
 -- substitute text
 vmap("<leader>s", [["hy:%s/<C-r>h/<C-r>h/gI<Left><Left><left>]])
-nmap("<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { silent = false })
+nmap(
+	"<leader>s",
+	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+	{ silent = false }
+)
 
 -- spell
 map({ "n", "v" }, "<leader>c", "1z=")
@@ -105,80 +109,4 @@ nmap("<leader>is", keyfunc.insert_screenshot, {
 	desc = "insert most recent screenshot in filetype dependant format",
 })
 
-map({ "n", "v" }, "<leader>r", keyfunc.surround_motion_with, {
-	expr = true,
-	desc = "Surround motion with character",
-})
-
----Snippet keymaps
-local keymap_snippets_cache = nil
-
-local function create_keymap_snippets()
-	local ls = require("luasnip")
-	local s = ls.snippet
-	local i = ls.insert_node
-	local fmta = require("luasnip.extras.fmt").fmta
-
-	return {
-		["{"] = s(
-			"keymap_{",
-			fmta(
-				[[
-<>
-}
-			]],
-				{ i(1) }
-			)
-		),
-		["["] = s(
-			"keymap_[",
-			fmta(
-				[[
-<>
-]
-			]],
-				{ i(1) }
-			)
-		),
-		["("] = s(
-			"keymap_(",
-			fmta(
-				[[
-<>
-)
-			]],
-				{ i(1) }
-			)
-		),
-	}
-end
-
----Smart <Enter> keymap function.
-local function smart_enter()
-	local col = vim.api.nvim_win_get_cursor(0)[2]
-	if col == 0 then
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
-		return
-	end
-	local line = vim.api.nvim_get_current_line()
-	local char_before = line:sub(col, col)
-
-	if char_before == "{" or char_before == "[" or char_before == "(" then
-		if keymap_snippets_cache == nil then
-			keymap_snippets_cache = create_keymap_snippets()
-		end
-
-		local snippet_to_expand = keymap_snippets_cache[char_before]
-
-		if snippet_to_expand then
-			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
-			require("luasnip").snip_expand(snippet_to_expand)
-		else
-			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
-		end
-	else
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
-	end
-end
-
-imap("<CR>", smart_enter, { noremap = true })
+imap("<CR>", keyfunc.smart_enter, { noremap = true })

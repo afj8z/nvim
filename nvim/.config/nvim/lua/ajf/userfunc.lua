@@ -21,7 +21,11 @@ function M.toggle_boolean_or_increment()
 	if replacement then
 		-- FIX: Use 'ciw' (change inner word) to preserve surrounding whitespace.
 		local keys = "ciw" .. replacement .. "<Esc>"
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", false)
+		vim.api.nvim_feedkeys(
+			vim.api.nvim_replace_termcodes(keys, true, false, true),
+			"n",
+			false
+		)
 
 		-- CASE 2: The word is a number.
 	elseif tonumber(word) then
@@ -48,7 +52,15 @@ end
 
 -- Open cwd root todo file
 function M.open_root_todo()
-	local markers = { ".git", "Makefile", "package.json", "pyproject.toml", "Cargo.toml", "go.mod", "todo" }
+	local markers = {
+		".git",
+		"Makefile",
+		"package.json",
+		"pyproject.toml",
+		"Cargo.toml",
+		"go.mod",
+		"todo",
+	}
 
 	local root_dir = vim.fs.root(0, markers)
 
@@ -102,52 +114,14 @@ function M.get_local_word_dict()
 	return sources
 end
 
-function M.surround_motion_with()
-	-- This operator funcon will run AFTER the user provides a motion (e.g., 'iw').
-	_G.__surround_operator_func = function()
-		-- 1. Get the character for the surrounding pair.
-		vim.api.nvim_echo({ { "", "Question" } }, true, {})
-		local char_code = vim.fn.getchar()
-
-		if char_code == 27 or char_code == 3 then -- Allow canceling with Escape or Ctrl-C
-			vim.api.nvim_echo({}, false, {}) -- Clear the prompt
-			return
-		end
-		local user_input_char = vim.fn.nr2char(char_code)
-		vim.api.nvim_echo({}, false, {}) -- Clear the prompt
-
-		-- 2. Handle aliases (b, B, m) and determine the delimiter pair.
-		local aliases = { b = "(", B = "{", m = "'" }
-		local open_char = aliases[user_input_char] or user_input_char
-
-		local closing_pairs = { ["("] = ")", ["["] = "]", ["{"] = "}" }
-		local close_char = closing_pairs[open_char] or open_char
-
-		-- 3. Get the text covered by the motion using the '[ and '] marks.
-		local start_pos = vim.api.nvim_buf_get_mark(0, "[")
-		local end_pos = vim.api.nvim_buf_get_mark(0, "]")
-		local start_line, start_col = start_pos[1] - 1, start_pos[2]
-		local end_line, end_col = end_pos[1] - 1, end_pos[2] + 1
-
-		local text_to_surround = vim.api.nvim_buf_get_text(0, start_line, start_col, end_line, end_col, {})
-
-		-- 4. Construct the new text by adding the surrounding pair.
-		text_to_surround[1] = open_char .. text_to_surround[1]
-		text_to_surround[#text_to_surround] = text_to_surround[#text_to_surround] .. close_char
-
-		-- 5. Replace the original text with the new, surrounded text.
-		vim.api.nvim_buf_set_text(0, start_line, start_col, end_line, end_col, text_to_surround)
-	end
-
-	vim.o.operatorfunc = "v:lua._G.__surround_operator_func"
-	return "g@"
-end
-
 function M.insert_screenshot()
 	local ftype = vim.bo.filetype
 
 	if ftype ~= "typst" then
-		return vim.notify("ft is not typst, cannot find format for current ft", vim.log.levels.WARN)
+		return vim.notify(
+			"ft is not typst, cannot find format for current ft",
+			vim.log.levels.WARN
+		)
 	end
 
 	local filePath = vim.fs.normalize("~/.typst/local/snips/0.1.0/snipmap.csv")
@@ -165,7 +139,13 @@ function M.insert_screenshot()
 	local function insert_lines(template)
 		for i, txt in ipairs(template) do
 			local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-			vim.api.nvim_buf_set_lines(0, row + i - 2, row + i - 1, false, { txt })
+			vim.api.nvim_buf_set_lines(
+				0,
+				row + i - 2,
+				row + i - 1,
+				false,
+				{ txt }
+			)
 		end
 	end
 
@@ -195,6 +175,150 @@ function M.ToggleCursorLine()
 				force = true,
 			})
 		end
+	end
+end
+
+function M.list_snips()
+	local filetype = vim.bo.filetype
+	local available_snippets = require("luasnip").available()
+
+	if not available_snippets[filetype] then
+		print("No LuaSnip snippets found for filetype: " .. filetype)
+		return
+	end
+
+	local snips_info = {}
+	for _, snippet in ipairs(available_snippets[filetype]) do
+		table.insert(snips_info, {
+			trigger = snippet.trigger,
+			name = snippet.name or "N/A",
+			type = snippet.snippetType or "snippet",
+		})
+	end
+
+	if #snips_info == 0 then
+		print("No LuaSnip snippets found for filetype: " .. filetype)
+		return
+	end
+
+	print("Available snippets for filetype: " .. filetype)
+	for _, info in ipairs(snips_info) do
+		print(
+			string.format(
+				"- Trigger: %-15s Name: %-30s Type: %s",
+				info.trigger,
+				info.name,
+				info.type
+			)
+		)
+	end
+end
+
+---@param toggle_on boolean|nil
+---@param lang string|nil
+function M.toggle_spell_lang(toggle_on, lang)
+	if toggle_on == nil then
+		toggle_on = true
+	end
+
+	if lang and lang ~= "_" then
+		vim.opt.spell = true
+		vim.opt.spelllang = lang
+		print("Spell enabled (" .. lang .. ")")
+		return
+	end
+
+	if toggle_on then
+		if not vim.opt.spell:get() then
+			vim.opt.spell = true
+			print("Spell enabled")
+		else
+			print("Spell is already enabled")
+		end
+		return
+	end
+
+	if not toggle_on then
+		if vim.opt.spell:get() then
+			vim.opt.spell = false
+			print("Spell disabled")
+		else
+			print("Spell is already disabled")
+		end
+		return
+	end
+end
+
+-- Cache for snippet objects
+local keymap_snippets_cache = nil
+
+local function get_keymap_snippets()
+	if keymap_snippets_cache then
+		return keymap_snippets_cache
+	end
+
+	local ls = require("luasnip")
+	local s = ls.snippet
+	local i = ls.insert_node
+	local fmta = require("luasnip.extras.fmt").fmta
+
+	keymap_snippets_cache = {
+		["{"] = s("keymap_{", fmta("<>\n}", { i(1) })),
+		["["] = s("keymap_[", fmta("<>\n]", { i(1) })),
+		["("] = s("keymap_(", fmta("<>\n)", { i(1) })),
+	}
+	return keymap_snippets_cache
+end
+
+function M.smart_enter()
+	local col = vim.api.nvim_win_get_cursor(0)[2]
+
+	-- Helper to send a raw <CR>
+	local function plain_enter()
+		vim.api.nvim_feedkeys(
+			vim.api.nvim_replace_termcodes("<CR>", true, false, true),
+			"n",
+			false
+		)
+	end
+
+	-- 1. Boundary check (Start of line)
+	if col == 0 then
+		return plain_enter()
+	end
+
+	local line = vim.api.nvim_get_current_line()
+	local char_before = line:sub(col, col)
+
+	-- 2. Check if we are after an opening bracket
+	local pairs = { ["{"] = "}", ["["] = "]", ["("] = ")" }
+	local closing_char = pairs[char_before]
+
+	if closing_char then
+		-- 3. ENHANCEMENT: Look ahead for the closing bracket
+		-- Get text after cursor
+		local rest_of_line = line:sub(col + 1)
+		-- Find first non-whitespace character
+		local next_char = rest_of_line:match("^%s*(.)")
+
+		-- If the next relevant char is the closing one, DO NOT expand.
+		-- Just do a normal enter to avoid double brackets: {|} -> {\n}
+		if next_char == closing_char then
+			return plain_enter()
+		end
+
+		-- Otherwise, expand the snippet
+		local snippets = get_keymap_snippets()
+		local snippet_to_expand = snippets[char_before]
+
+		if snippet_to_expand then
+			plain_enter()
+			require("luasnip").snip_expand(snippet_to_expand)
+		else
+			plain_enter()
+		end
+	else
+		plain_enter()
 	end
 end
 

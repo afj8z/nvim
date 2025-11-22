@@ -25,7 +25,10 @@ function M.load_modules(subdir, modules)
 		-- error, it won't crash Neovim.
 		local ok, err = pcall(require, full_module_path)
 		if not ok then
-			vim.notify("Error loading module: " .. full_module_path .. "\n" .. err, vim.log.levels.ERROR)
+			vim.notify(
+				"Error loading module: " .. full_module_path .. "\n" .. err,
+				vim.log.levels.ERROR
+			)
 		end
 	end
 end
@@ -45,10 +48,16 @@ function M.lazy_on_filetype(plugin_name, patterns, load_callback)
 		pattern = patterns,
 		once = true,
 		callback = function(args)
-			vim.notify("Loading " .. plugin_name .. "...", vim.log.levels.INFO, {
-				title = "Plugins",
-			})
-			-- Run the provided loader function
+			vim.defer_fn(function()
+				vim.notify(
+					"Loading " .. plugin_name .. "...",
+					vim.log.levels.INFO,
+					{
+						title = "Plugins",
+					}
+				)
+			end, 0)
+
 			load_callback(args)
 		end,
 	})
@@ -87,96 +96,72 @@ function M.command_stub(command_name, load_callback)
 	})
 end
 
--- Central registry for state
--- M.gated_state["Copilot"] = { locked = true, loaded = false }
-M.gated_state = {}
+-- [Keep all functions above M.command_stub] --
 
--- Initialize a plugin's state (default to locked)
-local function init_gated_state(name)
-	if not M.gated_state[name] then
-		M.gated_state[name] = { locked = true, loaded = false }
-	end
-	return M.gated_state[name]
-end
+---Creates a controller to Lazy-Load and Toggle a plugin.
+---It defines a command :{Name}Toggle automatically.
+---@param name string: The display name of the plugin (e.g., "Copilot")
+---@param opts table: Lifecycle functions
+---    - load: function() -> Code to packadd/setup the plugin (runs once)
+---    - enable: function() -> Code to enable the plugin (runs on toggle ON)
+---    - disable: function() -> Code to disable the plugin (runs on toggle OFF)
+---@return function: The 'load' function, so you can use it in other stubs.
+function M.create_toggle_controller(name, opts)
+	-- Internal state for this specific plugin
+	local state = {
+		loaded = false,
+		enabled = false,
+	}
 
----@param name string: The plugin's unique name
----@param load_callback function: The function that runs vim.pack.add/setup
----@return boolean: true if load succeeded or already loaded
-function M.attempt_gated_load(name, load_callback)
-	local state = init_gated_state(name)
-
-	if state.loaded then
-		return true
-	end
-	if state.locked then
-		return false
-	end -- Locked, do not load
-
-	-- Unlocked and not loaded
-	state.loaded = true
-	vim.notify("Loading " .. name .. "...", vim.log.levels.INFO, { title = "Plugins" })
-
-	load_callback()
-
-	-- Clean up triggers
-	vim.api.nvim_clear_autocmds({ group = "GatedLoader_" .. name })
-	return true
-end
-
----Creates a persistent event trigger for a gated plugin
----@param name string: The plugin's unique name
----@param event string: The autocmd event (e.g., "InsertEnter")
----@param load_callback function: The function to run
-function M.gated_on_event(name, event, load_callback)
-	local augroup = vim.api.nvim_create_augroup("GatedLoader_" .. name, { clear = true })
-	vim.api.nvim_create_autocmd(event, {
-		group = augroup,
-		callback = function()
-			M.attempt_gated_load(name, load_callback)
-		end,
-	})
-end
-
----Creates a persistent command trigger for a gated plugin
----@param name string: The plugin's unique name
----@param command_name string: The command to create ("Copilot")
----@param load_callback function: The function to run
-function M.gated_on_command(name, command_name, load_callback)
-	-- Ensure state exists on init
-	init_gated_state(name)
-
-	vim.api.nvim_create_user_command(command_name, function(args)
-		if M.attempt_gated_load(name, load_callback) then
-			-- delete stub and run the real command
-			vim.api.nvim_del_user_command(command_name)
-			vim.cmd(command_name .. " " .. (args.args or ""))
+	-- The core loading logic
+	local function load_plugin()
+		if state.loaded then
+			return
 		end
-		-- if locked, Stub remains
-	end, { nargs = "*", desc = "Gated lazy-load stub for " .. name })
-end
-
----Creates a toggle command for a "gated" plugin
----@param name string: The name used in create_gated_loader ("Copilot")
----@param enable_fn function?: Optional fn to run if already loaded and enabling
----@param disable_fn function?: Optional fn to run if already loaded and disabling
-function M.create_gated_toggle(name, enable_fn, disable_fn)
-	local state = init_gated_state(name)
+		-- 1. Run the user's load function (packadd + setup)
+		opts.load()
+		state.loaded = true
+		state.enabled = true -- We assume setup() enables it by default
+	end
 
 	vim.api.nvim_create_user_command(name .. "Toggle", function()
-		state.locked = not state.locked
-
-		if state.locked then
-			if state.loaded and disable_fn then
-				disable_fn()
-			end
-			vim.notify(name .. " globally DISABLED.", vim.log.levels.WARN, { title = name })
-		else
-			if state.loaded and enable_fn then
-				enable_fn()
-			end
-			vim.notify(name .. " globally ENABLED.", vim.log.levels.INFO, { title = name })
+		-- Not loaded yet? Load it.
+		if not state.loaded then
+			load_plugin()
+			vim.notify(
+				name .. " Loaded & Enabled",
+				vim.log.levels.INFO,
+				{ title = "Plugins" }
+			)
+			return
 		end
-	end, { desc = "Toggle " .. name .. " lazy-loading on/off" })
+
+		-- Already loaded? Toggle it.
+		if state.enabled then
+			if opts.disable then
+				opts.disable()
+			end
+			state.enabled = false
+			vim.notify(
+				name .. " Disabled",
+				vim.log.levels.WARN,
+				{ title = "Plugins" }
+			)
+		else
+			if opts.enable then
+				opts.enable()
+			end
+			state.enabled = true
+			vim.notify(
+				name .. " Enabled",
+				vim.log.levels.INFO,
+				{ title = "Plugins" }
+			)
+		end
+	end, { desc = "Lazy-Load / Toggle " .. name })
+
+	-- Return the load function to attach it to other commands
+	return load_plugin
 end
 
 function M.nmap(lhs, rhs, opt)

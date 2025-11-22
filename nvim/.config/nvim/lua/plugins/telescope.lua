@@ -1,5 +1,5 @@
 local utils = require("ajf.utils")
-local c = require("ajf.colors")
+local c = require("ajf.style").colors
 local nmap = utils.nmap
 local bindmap = utils.bind_map_pre_stub
 
@@ -55,8 +55,14 @@ local function load_and_remap_telescope()
 
 	local telescope = require("telescope")
 	local Layout = require("telescope.pickers.layout_strategies")
-	Layout.horizontal_merged = function(picker, max_columns, max_lines, layout_config)
-		local layout = Layout.horizontal(picker, max_columns, max_lines, layout_config)
+	Layout.horizontal_merged = function(
+		picker,
+		max_columns,
+		max_lines,
+		layout_config
+	)
+		local layout =
+			Layout.horizontal(picker, max_columns, max_lines, layout_config)
 		layout.results.line = layout.results.line - 1
 		layout.results.height = layout.results.height + 3
 		layout.results.width = layout.results.width + 1
@@ -68,8 +74,14 @@ local function load_and_remap_telescope()
 		return layout
 	end
 
-	Layout.below_merged = function(picker, max_columns, max_lines, layout_config)
-		local layout = Layout.vertical(picker, max_columns, max_lines, layout_config)
+	Layout.below_merged = function(
+		picker,
+		max_columns,
+		max_lines,
+		layout_config
+	)
+		local layout =
+			Layout.vertical(picker, max_columns, max_lines, layout_config)
 		layout.results.line = layout.results.line + 3
 		layout.results.height = layout.results.height - 1
 		layout.results.width = layout.results.width + 1
@@ -86,7 +98,8 @@ local function load_and_remap_telescope()
 	end
 
 	Layout.cursor_mini = function(picker, max_columns, max_lines, layout_config)
-		local layout = Layout.cursor(picker, max_columns, max_lines, layout_config)
+		local layout =
+			Layout.cursor(picker, max_columns, max_lines, layout_config)
 		layout.results.height = layout.results.height - 1
 		layout.results.title = ""
 		return layout
@@ -209,7 +222,11 @@ local function load_and_remap_telescope()
 	bindmap(
 		nmap,
 		pick_large_preview,
-		vim.tbl_extend("force", opts, { layout_config = { preview_width = 0.66 } }),
+		vim.tbl_extend(
+			"force",
+			opts,
+			{ layout_config = { preview_width = 0.66 } }
+		),
 		reset_highlights
 	)
 

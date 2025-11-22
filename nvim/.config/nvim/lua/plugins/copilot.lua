@@ -1,42 +1,34 @@
 local utils = require("ajf.utils")
-local PLUGIN_NAME = "Copilot"
 
--- load function
-local function do_load()
-	vim.pack.add({
-		{ src = "https://github.com/zbirenbaum/copilot.lua.git" },
-	})
-	require("copilot").setup({
-		suggestion = {
-			enabled = true,
-			auto_trigger = true,
-			hide_during_completion = true,
-			debounce = 75,
-			trigger_on_accept = true,
-			keymap = {
-				accept = "<M-l>",
-				accept_word = false,
-				accept_line = "<C-A>",
-				next = "<M-]>",
-				prev = "<M-[>",
-				dismiss = "<C-]>",
+local controller_load_fn = utils.create_toggle_controller("Copilot", {
+	load = function()
+		vim.pack.add({
+			{ src = "https://github.com/zbirenbaum/copilot.lua.git" },
+		})
+		require("copilot").setup({
+			suggestion = {
+				enabled = true,
+				auto_trigger = true,
+				keymap = {
+					accept = "<M-l>",
+					next = "<M-]>",
+					prev = "<M-[>",
+					dismiss = "<C-]>",
+				},
 			},
-		},
-	})
-end
+		})
+	end,
 
--- enable/disable functions for the toggle
-local function do_enable()
-	require("copilot").enable()
-end
+	-- How to Enable
+	enable = function()
+		vim.cmd("Copilot enable")
+	end,
 
-local function do_disable()
-	require("copilot").disable()
-end
+	-- How to Disable
+	disable = function()
+		vim.cmd("Copilot disable")
+	end,
+})
 
--- persistent, gated triggers
-utils.gated_on_event(PLUGIN_NAME, "InsertEnter", do_load)
-utils.gated_on_command(PLUGIN_NAME, "Copilot", do_load)
-
--- toggle command
-utils.create_gated_toggle(PLUGIN_NAME, do_enable, do_disable)
+-- :Copilot command will also trigger the load
+utils.command_stub("Copilot", controller_load_fn)

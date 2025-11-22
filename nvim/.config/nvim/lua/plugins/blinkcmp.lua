@@ -1,6 +1,9 @@
 vim.pack.add({
 	{ src = "https://github.com/xieyonn/blink-cmp-dat-word.git" },
-	{ src = "https://github.com/L3MON4D3/LuaSnip", run = "make install_jsregexp" },
+	{
+		src = "https://github.com/L3MON4D3/LuaSnip",
+		run = "make install_jsregexp",
+	},
 	{ src = "https://github.com/rafamadriz/friendly-snippets" },
 	{
 		src = "https://github.com/Saghen/blink.cmp",
@@ -29,7 +32,10 @@ require("blink.cmp").setup({
 			border = "none",
 			draw = {
 				treesitter = { "lsp" },
-				columns = { { "label", "label_description", gap = 1 }, { "kind" } },
+				columns = {
+					{ "label", "label_description", gap = 1 },
+					{ "kind" },
+				},
 			},
 		},
 		list = {
@@ -50,7 +56,7 @@ require("blink.cmp").setup({
 				name = "Word",
 				module = "blink-cmp-dat-word",
 				opts = {
-					paths = require("ajf.keyfunc").get_local_word_dict(),
+					paths = require("ajf.userfunc").get_local_word_dict(),
 				},
 			},
 		},

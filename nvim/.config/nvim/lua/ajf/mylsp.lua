@@ -1,6 +1,6 @@
 local diagnostic = vim.diagnostic
 local map = vim.keymap.set
-local sym = require("ajf.icons").diagnostics
+local sym = require("ajf.style").icons.diagnostics
 local style = require("ajf.utils").get_settings()
 
 vim.pack.add({
