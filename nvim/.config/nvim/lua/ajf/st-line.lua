@@ -1,7 +1,7 @@
 -- inspired by https://github.com/MariaSolOs/dotfiles/blob/main/.config/nvim/lua/statusline.lua
 -- much of it copied and adjusted for my case
 local M = {}
-local colors = require("colors")
+local colors = require("ajf.colors")
 local icons = require("ajf.icons")
 local internal_fts = {
 	help = true,

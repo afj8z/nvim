@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("ajf.utils")
 local PLUGIN_NAME = "Copilot"
 
 -- load function

@@ -2,7 +2,8 @@ vim.loader.enable()
 -- variable settings for uniform style between plugins
 local settings = {
 	theme = "ever",
-	border = "single",
+	-- border = "╭, ─,╮,│,╯,─,╰,│",
+	border = "solid",
 	symbols = {
 		error = "E",
 		warn = "W",
@@ -12,12 +13,11 @@ local settings = {
 }
 
 -- cache the settings table
-require("utils").set_settings(settings)
+require("ajf.utils").set_settings(settings)
 
-require("mylsp")
+require("ajf.mylsp")
 
 -- modular config
-require("ajf")
 require("config")
 require("plugins")
-require("colors")
+require("ajf.colors")

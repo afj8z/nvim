@@ -15,7 +15,7 @@ require("luasnip").config.setup({
 
 require("luasnip.loaders.from_vscode").lazy_load()
 require("luasnip.loaders.from_lua").load({
-	paths = "~/.config/nvim/lua/snippets/",
+	paths = "~/.config/nvim/lua/snippets",
 })
 
 require("blink.cmp").setup({
@@ -28,7 +28,7 @@ require("blink.cmp").setup({
 			max_height = 7,
 			border = "none",
 			draw = {
-				-- treesitter = { "lsp" },
+				treesitter = { "lsp" },
 				columns = { { "label", "label_description", gap = 1 }, { "kind" } },
 			},
 		},
@@ -41,7 +41,7 @@ require("blink.cmp").setup({
 	},
 	snippets = { preset = "luasnip" },
 	sources = {
-		default = { "lsp", "path", "buffer", "datword" },
+		default = { "lsp", "path", "snippets", "buffer", "datword" },
 		providers = {
 			lsp = {
 				timeout_ms = 10000,

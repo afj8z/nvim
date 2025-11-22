@@ -37,14 +37,13 @@ end
 ---@param load_callback function: The function to run, which should
 ---       call vim.pack.add(...) and require(...).setup().
 function M.lazy_on_filetype(plugin_name, patterns, load_callback)
-	-- Create a unique, self-cleaning augroup for this specific load.
 	local augroup_name = "LazyLoad" .. plugin_name
 	local augroup = vim.api.nvim_create_augroup(augroup_name, { clear = true })
 
 	vim.api.nvim_create_autocmd("FileType", {
 		group = augroup,
 		pattern = patterns,
-		once = true, -- The autocmd deletes itself after firing once
+		once = true,
 		callback = function(args)
 			vim.notify("Loading " .. plugin_name .. "...", vim.log.levels.INFO, {
 				title = "Plugins",
@@ -178,6 +177,39 @@ function M.create_gated_toggle(name, enable_fn, disable_fn)
 			vim.notify(name .. " globally ENABLED.", vim.log.levels.INFO, { title = name })
 		end
 	end, { desc = "Toggle " .. name .. " lazy-loading on/off" })
+end
+
+function M.nmap(lhs, rhs, opt)
+	vim.keymap.set("n", lhs, rhs, opt)
+end
+
+function M.imap(lhs, rhs, opt)
+	vim.keymap.set("i", lhs, rhs, opt)
+end
+
+function M.vmap(lhs, rhs, opt)
+	vim.keymap.set("v", lhs, rhs, opt)
+end
+
+---@param hl_map table Key: Highlight group. Value: Highlight options.
+function M.set_highlights(hl_map)
+	return function()
+		for hl_group, color_opts in pairs(hl_map) do
+			vim.api.nvim_set_hl(0, hl_group, color_opts)
+		end
+	end
+end
+
+function M.bind_map_pre_stub(map_func, mappings, options, pre_func)
+	for keybind, target_func in pairs(mappings) do
+		local operation = function()
+			if pre_func then
+				pre_func()
+			end
+			target_func(options)
+		end
+		map_func(keybind, operation)
+	end
 end
 
 return M

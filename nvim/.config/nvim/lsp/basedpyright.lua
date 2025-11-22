@@ -1,4 +1,4 @@
-local caps = require("lspcaps").caps
+local caps = require("ajf.lspcaps").caps
 
 return {
 	cmd = { "basedpyright-langserver", "--stdio" },

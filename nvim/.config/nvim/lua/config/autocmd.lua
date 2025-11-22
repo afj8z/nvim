@@ -37,10 +37,20 @@ vim.api.nvim_create_autocmd("FileType", {
 		"quickfix-list",
 		"quickfix",
 		"diagnostics",
-		"oil",
 	},
 	callback = function(args)
 		vim.keymap.set("n", "q", "<cmd>quit<cr>", { buffer = args.buf })
+	end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = vim.api.nvim_create_augroup("close_oil_with_q", { clear = true }),
+	desc = "Close oil buffer with <q> ",
+	pattern = {
+		"oil",
+	},
+	callback = function(args)
+		vim.keymap.set("n", "q", "<cmd>bdelete<cr>", { buffer = args.buf })
 	end,
 })
 
@@ -55,11 +65,4 @@ vim.api.nvim_create_autocmd("FileType", {
 -- auto resize splits when the terminal's window is resized
 vim.api.nvim_create_autocmd("VimResized", {
 	command = "wincmd =",
-})
-
-vim.api.nvim_create_autocmd("VimEnter", {
-	callback = function()
-		local startuptime = vim.fn.reltimefloat(vim.fn.reltime(vim.g.start_time))
-		vim.g.startup_time_ms = string.format("%.2f ms", startuptime * 1000)
-	end,
 })

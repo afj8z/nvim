@@ -1,44 +1,40 @@
 local keyfunc = require("ajf.keyfunc")
+local utils = require("ajf.utils")
 local map = vim.keymap.set
+local nmap = utils.nmap
+local imap = utils.imap
+local vmap = utils.vmap
 
-local nmap = function(lhs, rhs, opt)
-	vim.keymap.set("n", lhs, rhs, opt)
-end
-
-local imap = function(lhs, rhs, opt)
-	vim.keymap.set("i", lhs, rhs, opt)
-end
-
-local vmap = function(lhs, rhs, opt)
-	vim.keymap.set("v", lhs, rhs, opt)
-end
-
--- leader key
+-- set leader key
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 map({ "n", "v" }, "<leader>", "<nop>")
 
+-- editor operations
 nmap("<leader>o", ":update<CR> :source<CR>")
 nmap("<leader>w", "<Cmd>write<CR>")
 nmap("<leader>q", "<Cmd>:quit<CR>")
 nmap("<leader>Q", "<Cmd>:wqa<CR>")
-map({ "n", "v" }, "<leader>c", "1z=")
-map({ "n", "v" }, "<leader>n", ":norm ")
 
+-- substitute text
 vmap("<leader>s", [["hy:%s/<C-r>h/<C-r>h/gI<Left><Left><left>]])
 nmap("<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { silent = false })
 
--- clear highlights
-map({ "n", "v", "x" }, "<leader>/", ":noh<CR>", { silent = true })
+-- spell
+map({ "n", "v" }, "<leader>c", "1z=")
 
+-- editor commands
+map({ "n", "v" }, "<leader>n", ":norm ")
+nmap("<leader>lf", vim.lsp.buf.format)
+
+-- file navigation
 nmap("<leader>e", "<cmd>Oil<CR>", { silent = true })
 nmap(
 	"<leader>te",
 	"<cmd>lua local dir = vim.fn.expand('%:p:h'); vim.cmd('tabnew | Oil ' .. dir)<CR>",
 	{ silent = true }
-) --!TODO no new tab if file is [No Name]
+)
 nmap("<leader>E", "<cmd>tabnew | Oil<CR>", { silent = true })
-nmap("<leader>lf", vim.lsp.buf.format)
 
 -- buffer nav
 nmap("<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
@@ -51,7 +47,6 @@ nmap("<leader>bs", ":vert sf #<CR>")
 for i = 1, 8 do
 	map({ "n", "t" }, "<Leader>" .. i, "<Cmd>tabnext " .. i .. "<CR>")
 end
-
 nmap("<leader>td", "<cmd>tabclose<CR>")
 nmap("<leader>tt", "<cmd>tabnew<CR>")
 
@@ -64,15 +59,14 @@ nmap("<leader>+", "<cmd>resize -5<CR>")
 -- improve commands with motions
 nmap("n", "nzzzv")
 nmap("N", "Nzzzv")
+nmap("<C-u", "<C-u>zzzv")
+nmap("<C-d>", "<C-d>zzzv")
 
 -- smarter indenting
 nmap("<", "<<")
 nmap(">", ">>")
 vmap("<", "<gv")
 vmap(">", ">gv")
-
--- yank visible text
-nmap("yl", "v^vvg_y")
 
 map({ "n", "v", "o" }, "H", "^")
 map({ "n", "v", "o" }, "L", "$")
@@ -85,44 +79,30 @@ nmap("s", '"_s')
 nmap("X", '"_X')
 
 -- ** Text editing **
--- replace a word with yanked text, dont write to register
-nmap("rw", "viwpyiw")
-nmap("<leader>p", ":TypstPreviewToggle<CR>")
-nmap("U", "<C-r>")
-
+nmap("ryw", "viwpyiw", {
+	desc = "replace a word with yanked text, dont write to register",
+})
+nmap("rw", "viwp", {
+	desc = "replace a word with yanked text",
+})
 nmap("S", "ciw")
-nmap("cis", 'ci"', { desc = 'Change in "string"' })
-nmap("ciS", "ci'", { desc = "Change in 'String'" })
+nmap("<leader>p", ":TypstPreviewToggle<CR>")
 
-vmap("<leader>'", "c''<Esc>P", { desc = "Surround with single quotes" })
-vmap('<leader>"', 'c""<Esc>P', { desc = "Surround with double quotes" })
-vmap("<leader>(", "c()<Esc>P", { desc = "Surround with parentheses" })
-vmap("<leader>[", "c[]<Esc>P", { desc = "Surround with brackets" })
-vmap("<leader>{", "c{}<Esc>P", { desc = "Surround with braces" })
-
-nmap("<Leader>L", keyfunc.ToggleCursorLine)
-
-nmap("<leader>!", keyfunc.open_root_todo, {
-	desc = "Open project/global todo file",
+-- custom functions
+nmap("<Leader>L", keyfunc.ToggleCursorLine, {
+	desc = "toggle highlight full cursor line",
 })
 
 nmap("<C-A>", keyfunc.toggle_boolean_or_increment, {
 	noremap = true,
 	silent = true,
-	desc = "Increment number or toggle boolean",
+	desc = "Increment number or toggle (true|false)",
 })
 
-nmap("<leader>0", keyfunc.insert_screenshot, {
+nmap("<leader>is", keyfunc.insert_screenshot, {
 	noremap = true,
 	silent = true,
 	desc = "insert most recent screenshot in filetype dependant format",
-})
-
-imap("<C-l>", keyfunc.smart_space_jump, {
-	expr = true,
-	noremap = true,
-	silent = true,
-	desc = "Smart jump and space",
 })
 
 map({ "n", "v" }, "<leader>r", keyfunc.surround_motion_with, {
@@ -143,13 +123,11 @@ local function create_keymap_snippets()
 		["{"] = s(
 			"keymap_{",
 			fmta(
-				-- This template now *starts* with the cursor line.
-				-- The newline is inserted by the keymap function.
 				[[
 <>
 }
 			]],
-				{ i(1) } -- Insert node for the cursor
+				{ i(1) }
 			)
 		),
 		["["] = s(
@@ -175,11 +153,8 @@ local function create_keymap_snippets()
 	}
 end
 
----
--- Smart <Enter> keymap function.
----
+---Smart <Enter> keymap function.
 local function smart_enter()
-	-- 1. Get char before cursor
 	local col = vim.api.nvim_win_get_cursor(0)[2]
 	if col == 0 then
 		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
@@ -188,29 +163,22 @@ local function smart_enter()
 	local line = vim.api.nvim_get_current_line()
 	local char_before = line:sub(col, col)
 
-	-- 2. Check if we have a snippet for it
 	if char_before == "{" or char_before == "[" or char_before == "(" then
-		-- 3. Load/get snippets from cache
 		if keymap_snippets_cache == nil then
 			keymap_snippets_cache = create_keymap_snippets()
 		end
 
-		-- 4. Get the specific snippet
 		local snippet_to_expand = keymap_snippets_cache[char_before]
 
 		if snippet_to_expand then
-			-- 5. FIX: Manually insert the newline FIRST
 			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
-			-- 6. NOW expand the snippet on the new line
 			require("luasnip").snip_expand(snippet_to_expand)
 		else
 			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
 		end
 	else
-		-- 7. Not a bracket, just insert a normal newline
 		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
 	end
 end
 
--- The actual keymap in insert mode (NO expr = true)
 imap("<CR>", smart_enter, { noremap = true })

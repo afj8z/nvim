@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("ajf.utils")
 
 utils.lazy_on_filetype("TypstPreview", { "typst" }, function()
 	vim.cmd("packadd typst-preview.nvim")

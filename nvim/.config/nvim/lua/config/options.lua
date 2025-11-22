@@ -1,4 +1,4 @@
-local style = require("utils").get_settings()
+local style = require("ajf.utils").get_settings()
 local vo = vim.opt
 local vg = vim.g
 local vc = vim.cmd
@@ -36,6 +36,7 @@ vg.have_nerd_font = true
 
 vo.completeopt = { "menu", "menuone", "noselect" }
 
+-- Blink in insert mode
 vim.opt.guicursor = "n-v-c:block,i-ci-r:block-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,o:hor400-Cursor"
 
 vc("set updatetime=750")

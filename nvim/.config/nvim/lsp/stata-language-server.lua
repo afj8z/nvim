@@ -1,18 +1,18 @@
-local caps = require("lspcaps").caps
+local caps = require("ajf.lspcaps").caps
 
 return {
-	cmd = { "stata-language-server" }, -- Path to the server executable
+	cmd = { "stata-language-server" },
 	filetypes = { "stata" }, -- Filetypes to associate with the server
 	root_markers = { ".git" },
 	single_file_support = true,
 	settings = {
 		stata = {
-			setMaxLineLength = 70, -- Example: Set max line length
-			setIndentSpace = 4, -- Example: Set indentation spaces
-			enableCompletion = true, -- Enable autocompletion
-			enableDocstring = true, -- Enable hover documentation
-			enableStyleChecking = true, -- Enable style checking
-			enableFormatting = true, -- Enable formatting
+			setMaxLineLength = 70,
+			setIndentSpace = 4,
+			enableCompletion = true,
+			enableDocstring = true,
+			enableStyleChecking = true,
+			enableFormatting = true,
 		},
 	},
 	capabilities = caps,

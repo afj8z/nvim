@@ -1,18 +1,11 @@
-require("nIM").setup({
-	run_file = {
-		keymap = "<leader>a",
-	},
-})
-
-require("utils").load_modules("plugins", {
+require("ajf.utils").load_modules("plugins", {
 	"oil",
-	"ts",
-	"typpv",
-	"blcmp",
+	"treesitter",
+	"typstpv",
+	"blinkcmp",
 	"format",
-	"runfile",
-	"fzf",
+	"nim",
+	"telescope",
 	"colorize",
-	-- "bracketm",
 	"copilot",
 })

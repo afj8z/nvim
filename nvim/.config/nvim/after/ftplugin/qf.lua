@@ -7,6 +7,3 @@ adjust_height(2, 9)
 
 vim.opt_local.relativenumber = false
 vim.opt_local.hlsearch = false
-
--- vim.api.nvim_set_hl(0, "Search", {})
--- vim.api.nvim_set_hl(0, "QuickFixLine", {})

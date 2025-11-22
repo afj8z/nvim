@@ -1,7 +1,7 @@
 -- icons shamelessly stolen from https://github.com/MariaSolOs/dotfiles/blob/main/.config/nvim/lua/icons.lua
 local M = {}
 
-local sym = require("utils").get_settings().symbols
+local sym = require("ajf.utils").get_settings().symbols
 
 --- Diagnostic severities.
 M.diagnostics = {

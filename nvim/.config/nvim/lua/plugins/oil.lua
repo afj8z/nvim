@@ -4,7 +4,7 @@ vim.pack.add({
 })
 
 local sym = require("ajf.icons").diagnostics
-local style = require("utils").get_settings()
+local style = require("ajf.utils").get_settings()
 
 require("oil").setup({
 	default_file_explorer = true,

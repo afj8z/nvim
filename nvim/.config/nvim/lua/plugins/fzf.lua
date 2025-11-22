@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("ajf.utils")
 
 local fzf_loaded = false
 local function load_and_remap_fzf()
@@ -12,7 +12,7 @@ local function load_and_remap_fzf()
 	})
 
 	local fzf_lua = require("fzf-lua")
-	local colors = require("colors")
+	local colors = require("ajf.colors")
 
 	local tabline_h = (vim.o.showtabline > 0 and 1 or 0)
 	local statusline_h = (vim.o.laststatus > 0 and 1 or 0)
@@ -70,13 +70,13 @@ local function load_and_remap_fzf()
 		},
 	})
 
+	vim.api.nvim_set_hl(0, "FzfLuaNormal", { link = "Normal" })
 	vim.api.nvim_set_hl(0, "FzfLuaBorder", { link = "FloatBorder" })
 	vim.api.nvim_set_hl(0, "FzfLuaTitle", { link = "FloatBorder" })
 	vim.api.nvim_set_hl(0, "FzfLuaFzfGutter", { link = "Normal" })
 
 	local _fullscreen = {
 		fzf_opts = {
-
 			["--layout"] = "default",
 		},
 		winopts = {

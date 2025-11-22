@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("ajf.utils")
 
 utils.lazy_on_filetype("Colorizer", {
 	"css",
@@ -6,10 +6,12 @@ utils.lazy_on_filetype("Colorizer", {
 	"javascript",
 	"lua",
 	"scss",
+	"json",
+	"toml",
+	"typst",
+	"kitty",
 }, function()
-	vim.pack.add({
-		{ src = "https://github.com/catgoose/nvim-colorizer.lua.git" },
-	})
+	vim.cmd("packadd nvim-colorizer.lua")
 	require("colorizer").setup({
 		user_default_options = {
 			names = false,
