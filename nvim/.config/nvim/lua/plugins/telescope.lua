@@ -141,6 +141,9 @@ local function load_and_remap_telescope()
 					},
 				},
 			},
+			find_files = {
+				hidden = true,
+			},
 		},
 	})
 
