@@ -63,10 +63,38 @@ function M.lazy_on_filetype(plugin_name, patterns, load_callback)
 	})
 end
 
+---Creates a self-cleaning autocommand to lazy-load a plugin on a specific event.
+---@param plugin_name string: A unique name (e.g., "Blink") for the augroup.
+---@param event string|table: The event(s) to trigger loading (e.g., "InsertEnter").
+---@param load_callback function: The function to run, which should call
+---			vim.pack.add(...) and require(...).setup().
+function M.lazy_on_event(plugin_name, event, load_callback)
+	local augroup_name = "LazyLoad" .. plugin_name
+	local augroup = vim.api.nvim_create_augroup(augroup_name, { clear = true })
+
+	vim.api.nvim_create_autocmd(event, {
+		group = augroup,
+		once = true,
+		callback = function(args)
+			vim.defer_fn(function()
+				vim.notify(
+					"Loading " .. plugin_name .. "...",
+					vim.log.levels.INFO,
+					{
+						title = "Plugins",
+					}
+				)
+			end, 0)
+
+			load_callback(args)
+		end,
+	})
+end
+
 ---Creates a "stub" keymap that loads a plugin on its first use.
 ---@param mode string|table: The keymap mode (e.g., "n", { "n", "v" })
 ---@param lhs string: The left-hand side of the keymap
----@param load_callback function: A function that loads the plugin AND
+---@param load_callback function: A function that loads the plugin and
 ---       re-defines the keymap to its *real* function.
 ---@param opts table: Standard keymap options (e.g., { desc = "..." })
 function M.keymap_stub(mode, lhs, load_callback, opts)

@@ -1,105 +1,109 @@
-vim.pack.add({
-	{ src = "https://github.com/xieyonn/blink-cmp-dat-word.git" },
-	{
-		src = "https://github.com/L3MON4D3/LuaSnip",
-		run = "make install_jsregexp",
-	},
-	{ src = "https://github.com/rafamadriz/friendly-snippets" },
-	{
-		src = "https://github.com/Saghen/blink.cmp",
-		version = "v1.6.0",
-	},
-})
+local utils = require("ajf.utils")
 
-require("luasnip").config.setup({
-	enable_autosnippets = true,
-	store_selection_keys = "<Tab>",
-})
+utils.lazy_on_event("BlinkCmp", "InsertEnter", function()
+	vim.pack.add({
+		{ src = "https://github.com/xieyonn/blink-cmp-dat-word.git" },
+		{
+			src = "https://github.com/L3MON4D3/LuaSnip",
+			run = "make install_jsregexp",
+		},
+		{ src = "https://github.com/rafamadriz/friendly-snippets" },
+		{
+			src = "https://github.com/Saghen/blink.cmp",
+			version = "v1.6.0",
+		},
+	})
 
-require("luasnip.loaders.from_vscode").lazy_load()
-require("luasnip.loaders.from_lua").load({
-	paths = "~/.config/nvim/lua/snippets",
-})
+	require("luasnip").config.setup({
+		enable_autosnippets = true,
+		store_selection_keys = "<Tab>",
+	})
 
-require("blink.cmp").setup({
-	signature = { enabled = true },
-	completion = {
-		ghost_text = { enabled = true },
-		documentation = { auto_show = true, auto_show_delay_ms = 0 },
-		menu = {
-			auto_show = true,
-			max_height = 7,
-			border = "none",
-			draw = {
-				treesitter = { "lsp" },
-				columns = {
-					{ "label", "label_description", gap = 1 },
-					{ "kind" },
+	require("luasnip.loaders.from_vscode").lazy_load()
+	require("luasnip.loaders.from_lua").load({
+		paths = "~/.config/nvim/lua/snippets",
+	})
+
+	require("blink.cmp").setup({
+		signature = { enabled = true },
+		completion = {
+			ghost_text = { enabled = true },
+			documentation = { auto_show = true, auto_show_delay_ms = 0 },
+			menu = {
+				auto_show = true,
+				max_height = 7,
+				border = "none",
+				draw = {
+					treesitter = { "lsp" },
+					columns = {
+						{ "label", "label_description", gap = 1 },
+						{ "kind" },
+					},
+				},
+			},
+			list = {
+				selection = {
+					preselect = false,
+					auto_insert = true,
 				},
 			},
 		},
-		list = {
-			selection = {
-				preselect = false,
-				auto_insert = true,
-			},
-		},
-	},
-	snippets = { preset = "luasnip" },
-	sources = {
-		default = { "lsp", "path", "snippets", "buffer", "datword" },
-		providers = {
-			lsp = {
-				timeout_ms = 10000,
-			},
-			datword = {
-				name = "Word",
-				module = "blink-cmp-dat-word",
-				opts = {
-					paths = require("ajf.userfunc").get_local_word_dict(),
+		snippets = { preset = "luasnip" },
+		sources = {
+			default = { "lsp", "path", "snippets", "buffer", "datword" },
+			providers = {
+				lsp = {
+					timeout_ms = 10000,
+				},
+				datword = {
+					name = "Word",
+					module = "blink-cmp-dat-word",
+					opts = {
+						paths = require("ajf.userfunc").get_local_word_dict(),
+					},
 				},
 			},
 		},
-	},
-	keymap = {
-		["<Tab>"] = {
-			function(cmp)
-				if cmp.snippet_active() then
-					return cmp.accept()
-				else
-					return cmp.select_and_accept()
-				end
-			end,
-			"snippet_forward",
-			"fallback",
+		keymap = {
+			["<Tab>"] = {
+				function(cmp)
+					if cmp.snippet_active() then
+						return cmp.accept()
+					else
+						return cmp.select_and_accept()
+					end
+				end,
+				"snippet_forward",
+				"fallback",
+			},
 		},
-	},
-	fuzzy = {
-		implementation = "prefer_rust_with_warning",
-	},
+		fuzzy = {
+			implementation = "prefer_rust_with_warning",
+		},
 
-	term = {
-		enabled = true,
-	},
-	cmdline = {
-		keymap = { preset = "inherit" },
-		completion = { menu = { auto_show = true } },
-	},
-	appearance = {
-		use_nvim_cmp_as_default = false,
-	},
-})
+		term = {
+			enabled = true,
+		},
+		cmdline = {
+			keymap = { preset = "inherit" },
+			completion = { menu = { auto_show = true } },
+		},
+		appearance = {
+			use_nvim_cmp_as_default = false,
+		},
+	})
 
-vim.api.nvim_create_autocmd("User", {
-	pattern = "BlinkCmpMenuOpen",
-	callback = function()
-		vim.b.copilot_suggestion_hidden = true
-	end,
-})
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "BlinkCmpMenuOpen",
+		callback = function()
+			vim.b.copilot_suggestion_hidden = true
+		end,
+	})
 
-vim.api.nvim_create_autocmd("User", {
-	pattern = "BlinkCmpMenuClose",
-	callback = function()
-		vim.b.copilot_suggestion_hidden = false
-	end,
-})
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "BlinkCmpMenuClose",
+		callback = function()
+			vim.b.copilot_suggestion_hidden = false
+		end,
+	})
+end)
