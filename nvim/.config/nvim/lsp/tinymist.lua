@@ -6,7 +6,7 @@ return {
 	settings = {
 		formatterMode = "typstyle",
 		formatterIndentSize = 4,
-		formatterPrintWidth = 80,
+		formatterPrintWidth = 84,
 		formatterProseWrap = true,
 		lint = {
 			enabled = true,

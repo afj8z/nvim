@@ -9,4 +9,30 @@ require("nIM").setup({
 			expand_cmd = "<C-v>",
 		},
 	},
+	statusline = {
+		modules = {
+			lsp = {
+				use_conform = true,
+				show_formatter = true,
+			},
+		},
+		order = {
+			left = { "file", "git_branch" },
+			-- center = {},
+			right = {
+				"lsp",
+				"diagnostics",
+				"position",
+			},
+		},
+
+		icons = {
+			diagnostics = {
+				ERROR = "E",
+				WARN = "W",
+				HINT = "H",
+				INFO = "I",
+			},
+		},
+	},
 })

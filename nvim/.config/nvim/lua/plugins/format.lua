@@ -32,9 +32,17 @@ utils.lazy_on_filetype("Conform", {
 			python = { "ruff", "black" },
 			lua = { "stylua" },
 			javascript = { "prettierd", "prettier", stop_after_first = true },
-			javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+			javascriptreact = {
+				"prettierd",
+				"prettier",
+				stop_after_first = true,
+			},
 			typescript = { "prettierd", "prettier", stop_after_first = true },
-			typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+			typescriptreact = {
+				"prettierd",
+				"prettier",
+				stop_after_first = true,
+			},
 			json = { "prettierd", "prettier", stop_after_first = true },
 			shellscript = { "prettierd", "prettier", stop_after_first = true },
 			markdown = { "prettierd", "prettier", stop_after_first = true },
@@ -44,6 +52,16 @@ utils.lazy_on_filetype("Conform", {
 			statafmt = {
 				command = "statafmt",
 				args = { "--width", "40", "--cont-indent", "2" },
+				stdin = true,
+			},
+			typstyle = {
+				command = "typstyle",
+				args = {
+					"--line-width",
+					"84",
+					"-t",
+					"4",
+				},
 				stdin = true,
 			},
 		},

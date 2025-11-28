@@ -11,6 +11,7 @@ vo.termguicolors = true
 vo.scrolloff = 4
 vo.textwidth = 80
 vo.showtabline = 2
+vo.showmode = true
 
 vo.undofile = true
 vo.swapfile = false
@@ -37,7 +38,8 @@ vg.have_nerd_font = true
 vo.completeopt = { "menu", "menuone", "noselect" }
 
 -- Blink in insert mode
-vim.opt.guicursor = "n-v-c:block,i-ci-r:block-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,o:hor400-Cursor"
+vim.opt.guicursor =
+	"n-v-c:block,i-ci-r:block-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,o:hor400-Cursor"
 
 vc("set updatetime=750")
 
