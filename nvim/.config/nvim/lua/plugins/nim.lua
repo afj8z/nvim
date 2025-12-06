@@ -18,12 +18,8 @@ require("nIM").setup({
 		},
 		order = {
 			left = { "file", "git_branch" },
-			-- center = {},
-			right = {
-				"lsp",
-				"diagnostics",
-				"position",
-			},
+			center = {},
+			right = { "lsp", "diagnostics", "position" },
 		},
 
 		icons = {
@@ -33,6 +29,13 @@ require("nIM").setup({
 				HINT = "H",
 				INFO = "I",
 			},
+		},
+	},
+	snipshot = {
+		keymaps = {
+			paste_recent = "<leader>xx", -- e.g. "<Leader>p"
+			browse_global = "<leader>xg", -- e.g. "<Leader>pg"
+			browse_local = "<leader>xl", -- e.g. "<Leader>pl"
 		},
 	},
 })

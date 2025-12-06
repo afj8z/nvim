@@ -8,4 +8,5 @@ require("ajf.utils").load_modules("plugins", {
 	"telescope",
 	"colorize",
 	"copilot",
+	"image",
 })

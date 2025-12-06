@@ -65,7 +65,7 @@ utils.lazy_on_event("BlinkCmp", "InsertEnter", function()
 			},
 		},
 		keymap = {
-			["<Tab>"] = {
+			["<S-Tab>"] = {
 				function(cmp)
 					if cmp.snippet_active() then
 						return cmp.accept()
@@ -73,9 +73,9 @@ utils.lazy_on_event("BlinkCmp", "InsertEnter", function()
 						return cmp.select_and_accept()
 					end
 				end,
-				"snippet_forward",
 				"fallback",
 			},
+			["<Tab>"] = { "snippet_forward", "fallback" },
 		},
 		fuzzy = {
 			implementation = "prefer_rust_with_warning",

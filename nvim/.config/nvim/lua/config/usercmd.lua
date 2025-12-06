@@ -17,3 +17,20 @@ vim.api.nvim_create_user_command("Spen", function()
 end, {})
 
 vim.api.nvim_create_user_command("SnipList", uf.list_snips, {})
+
+vim.api.nvim_create_user_command("Spen", function()
+	uf.toggle_spell_lang(true, "en")
+end, {})
+
+local function lua_runner()
+	local cwd = vim.fn.getcwd(0)
+	local fpath = vim.api.nvim_buf_get_name(0)
+	local ft = vim.bo.filetype
+
+	local fwd = vim.fn.fnamemodify(fpath, ":p:h")
+	print(cwd, fpath, ft, fwd)
+end
+
+vim.api.nvim_create_user_command("LUA", function()
+	lua_runner()
+end, {})
