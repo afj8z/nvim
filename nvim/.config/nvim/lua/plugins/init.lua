@@ -9,4 +9,5 @@ require("ajf.utils").load_modules("plugins", {
 	"colorize",
 	"copilot",
 	"image",
+	"crib",
 })

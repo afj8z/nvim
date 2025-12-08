@@ -2,21 +2,6 @@ local M = {}
 
 local sym = require("ajf.utils").get_settings().symbols
 
-M.colors = {
-	black = "#111012",
-	bg = "#111012",
-	float = "#25212B",
-	comment = "#595466",
-	fg = "#DBD0C6",
-	accent = "#8A7FA3",
-	diag = {
-		error = "#99453D",
-		hint = "#b4d4cf",
-		info = "#8A7FA3",
-		warn = "#F7B982",
-	},
-}
-
 --- Diagnostic severities.
 M.icons = {
 	diagnostics = {

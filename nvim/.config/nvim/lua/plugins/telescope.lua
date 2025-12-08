@@ -1,5 +1,5 @@
 local utils = require("ajf.utils")
-local c = require("ajf.style").colors
+local c = require("ajf.colors")
 local nmap = utils.nmap
 local bindmap = utils.bind_map_pre_stub
 
