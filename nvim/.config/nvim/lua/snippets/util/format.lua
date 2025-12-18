@@ -114,7 +114,10 @@ function M.generate_matrix(args, snip)
 		ins_indx = ins_indx + 1
 		for k = 2, cols do
 			table.insert(nodes, t(" , "))
-			table.insert(nodes, r(ins_indx, tostring(j) .. "x" .. tostring(k), i(1)))
+			table.insert(
+				nodes,
+				r(ins_indx, tostring(j) .. "x" .. tostring(k), i(1))
+			)
 			ins_indx = ins_indx + 1
 		end
 		table.insert(nodes, t({ ";", "" }))
@@ -126,7 +129,7 @@ end
 
 function M.generate_cases(args, snip)
 	local rows = tonumber(snip.captures[1]) or 2 -- default option 2 for cases
-	local cols = 2 -- fix to 2 cols
+	local cols = 2                            -- fix to 2 cols
 	local nodes = {}
 	local ins_indx = 1
 	for j = 1, rows do
@@ -134,7 +137,10 @@ function M.generate_cases(args, snip)
 		ins_indx = ins_indx + 1
 		for k = 2, cols do
 			table.insert(nodes, t(" & "))
-			table.insert(nodes, r(ins_indx, tostring(j) .. "x" .. tostring(k), i(1)))
+			table.insert(
+				nodes,
+				r(ins_indx, tostring(j) .. "x" .. tostring(k), i(1))
+			)
 			ins_indx = ins_indx + 1
 		end
 		table.insert(nodes, t({ ",", "" }))
@@ -320,7 +326,7 @@ function M.build_screenshot_node(args, parent_snippet)
 		t('", size: '),
 		i(3, "8em"), -- Third stop
 		t({ ")", "#wrap-content(", "    [#" .. unique_name .. "],", "    [" }),
-		i(2, ""), -- Second stop
+		i(2, ""),    -- Second stop
 		t({ "],", "    column-gutter: 1em,", ")" }),
 	}
 
@@ -364,6 +370,8 @@ function M.get_dynamic_project_name()
 
 	local dynamic_templates = {
 		["^hw(%d+)%.?.*$"] = "Homework %s",
+		["^tut(%d+)%.?.*$"] = "Tutorium %s",
+		["^mock(%d+)%.?.*$"] = "Mock Exam %s",
 		["^lec(%d+)%.?.*$"] = "Lecture %s",
 		["^q(%d+)%.?.*$"] = "Quiz %s",
 		["^abg(%d+)%.?.*$"] = "Abgabe %s",

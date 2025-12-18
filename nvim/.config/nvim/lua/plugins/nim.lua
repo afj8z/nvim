@@ -38,4 +38,9 @@ require("nIM").setup({
 			browse_local = "<leader>xl", -- e.g. "<Leader>pl"
 		},
 	},
+	projectfile = {
+		keymaps = {
+			find = "<leader>h",
+		},
+	},
 })
