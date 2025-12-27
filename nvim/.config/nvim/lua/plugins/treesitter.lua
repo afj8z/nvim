@@ -30,6 +30,7 @@ require("nvim-treesitter.configs").setup({
 		"rasi",
 		"c",
 		"typst",
+		"wim",
 	},
 	highlight = { enable = true },
 	autopairs = {

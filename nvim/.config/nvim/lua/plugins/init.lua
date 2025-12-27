@@ -10,4 +10,5 @@ require("ajf.utils").load_modules("plugins", {
 	"copilot",
 	"image",
 	"crib",
+	"wim",
 })

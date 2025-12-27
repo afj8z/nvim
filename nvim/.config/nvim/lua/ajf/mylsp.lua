@@ -82,6 +82,7 @@ utils.lazy_on_filetype("LSP", lsp_filetypes, function()
 			"prettier",
 			"json-lsp",
 			"marksman",
+			"ts_ls",
 		},
 	})
 end)
