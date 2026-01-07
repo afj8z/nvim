@@ -25,9 +25,16 @@ local lsp_filetypes = {
 	"html",
 	"css",
 	"rst",
+	"joker",
 }
 
-utils.lazy_on_filetype("LSP", lsp_filetypes, function()
+utils.lazy_on_filetype("LSP", lsp_filetypes, function(args)
+	-- node not in sys PATH, so make available to Mason in nvim
+	local node_bin_path =
+		vim.fn.expand("$HOME/.config/nvm/versions/node/v24.12.0/bin") -- Update version if needed
+	if vim.fn.isdirectory(node_bin_path) == 1 then
+		vim.env.PATH = node_bin_path .. ":" .. vim.env.PATH
+	end
 	vim.pack.add({
 		{ src = "https://github.com/neovim/nvim-lspconfig" },
 		{ src = "https://github.com/mason-org/mason.nvim" },
@@ -85,6 +92,15 @@ utils.lazy_on_filetype("LSP", lsp_filetypes, function()
 			"ts_ls",
 		},
 	})
+	vim.schedule(function()
+		-- specific check to ensure buffer is still valid and needs this
+		if args.buf and vim.api.nvim_buf_is_valid(args.buf) then
+			vim.api.nvim_exec_autocmds(
+				"FileType",
+				{ buffer = args.buf, modeline = false }
+			)
+		end
+	end)
 end)
 
 -- Diagnostics config can stay global, i guess startup would be

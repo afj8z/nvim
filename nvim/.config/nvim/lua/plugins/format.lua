@@ -15,6 +15,7 @@ utils.lazy_on_filetype("Conform", {
 	"zsh",
 	"bash",
 	"shellscript",
+	"kbd",
 }, function()
 	vim.pack.add({
 		{
@@ -47,6 +48,7 @@ utils.lazy_on_filetype("Conform", {
 			shellscript = { "prettierd", "prettier", stop_after_first = true },
 			markdown = { "prettierd", "prettier", stop_after_first = true },
 			stata = { "statafmt" },
+			kbd = { "joker" },
 		},
 		formatters = {
 			statafmt = {

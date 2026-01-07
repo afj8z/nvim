@@ -44,4 +44,5 @@ vim.opt.guicursor =
 vc("set updatetime=750")
 
 vim.g.tundra_biome = "custom"
+vim.g.color_pp = "alt"
 vim.cmd("colorscheme tundra")

@@ -7,7 +7,7 @@ utils.lazy_on_filetype("TypstPreview", { "typst" }, function()
 
 	require("typst-preview").setup({
 		dependencies_bin = { ["tinymist"] = "tinymist" },
-		open_cmd = 'firefox --new-window --no-remote -P "preview-profile" %s',
+		open_cmd = 'firefox --new-window --no-remote -P "previewer" %s',
 		invert_colors = "never",
 		follow_cursor = true,
 	})
