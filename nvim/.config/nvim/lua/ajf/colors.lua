@@ -1,14 +1,14 @@
 return {
-	black = "#242422",
-	bg = "#242422",
-	float = "#4e4e4a",
-	comment = "#5E5E5A",
-	fg = "#EDEDDA",
-	accent = "#98c379",
+	black = "#261A1D",
+	bg = "#261A1D",
+	float = "#484445",
+	comment = "#7D7276",
+	fg = "#D1DDE3",
+	accent = "#5083C7",
 	diag = {
-		error = "#e06c75",
-		hint = "#B5C985",
-		info = "#88C0D0",
+		error = "#BF616A",
+		hint = "#88C0D0",
+		info = "#B9C0E5",
 		warn = "#EBCB8B",
 	},
 }

@@ -15,9 +15,22 @@ require("nIM").setup({
 				use_conform = true,
 				show_formatter = true,
 			},
+			file = {
+				path = {
+					show = "full",
+					envsub = {
+						["/home/aidanfleming"] = "~",
+						regex = {
+							["arch%-dots/[^/]+/%.config/([^/]+)"] = "dots/.c/%1",
+							["nvim/nvim/.config/nvim"] = "nvdots",
+							["arch%-dots"] = "dots",
+						},
+					},
+				},
+			},
 		},
 		order = {
-			left = { "file", "git_branch" },
+			left = { "file", "snippet" },
 			center = {},
 			right = { "lsp", "diagnostics", "position" },
 		},

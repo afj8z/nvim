@@ -25,7 +25,8 @@ local lsp_filetypes = {
 	"html",
 	"css",
 	"rst",
-	"joker",
+	"kbd",
+	"sql",
 }
 
 utils.lazy_on_filetype("LSP", lsp_filetypes, function(args)
@@ -70,6 +71,7 @@ utils.lazy_on_filetype("LSP", lsp_filetypes, function(args)
 	require("mason-tool-installer").setup({
 		ensure_installed = {
 			"clangd",
+			"clang-format",
 			"rust-analyzer",
 			"basedpyright",
 			"lua_ls",
@@ -90,6 +92,8 @@ utils.lazy_on_filetype("LSP", lsp_filetypes, function(args)
 			"json-lsp",
 			"marksman",
 			"ts_ls",
+			"joker",
+			"sqls",
 		},
 	})
 	vim.schedule(function()

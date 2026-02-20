@@ -1,6 +1,5 @@
 require("ajf.utils").load_modules("plugins", {
 	"oil",
-	"tab",
 	"treesitter",
 	"typstpv",
 	"blinkcmp",
@@ -11,4 +10,9 @@ require("ajf.utils").load_modules("plugins", {
 	"copilot",
 	"image",
 	"leetcode",
+	"ttyper",
+	"mfig",
+	"aerial",
+	"neogit",
+	"todo",
 })

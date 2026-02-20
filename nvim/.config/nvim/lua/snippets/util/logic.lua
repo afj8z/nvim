@@ -46,6 +46,7 @@ function M.math_snippet(trigger, nodes, opts)
 
 	local trigger_opts = {
 		trig = trigger,
+		name = opts.name,
 		wordTrig = opts.wordTrig == nil and true or opts.wordTrig,
 		priority = opts.priority,
 	}
@@ -54,7 +55,12 @@ function M.math_snippet(trigger, nodes, opts)
 		trigger_opts.regTrig = true
 	end
 
+	if opts.name then
+		trigger_opts.name = opts.name
+	end
+
 	opts.condition = M.is_in_math
+	opts.name = ""
 	opts.wordTrig = nil
 	opts.regTrig = nil
 	opts.priority = nil

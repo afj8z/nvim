@@ -16,7 +16,11 @@ return {
 	settings = {
 		basedpyright = {
 			disableOrganizeImports = true, -- let Ruff handle imports
-			-- analysis = { typeCheckingMode = "basic" }, -- optional
+			analysis = {
+				typeCheckingMode = "standard",
+				reportUnusedCallResult = false,
+				reportAny = false,
+			}, -- optional
 		},
 	},
 }

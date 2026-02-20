@@ -1,4 +1,4 @@
-column_width = 80
+column_width = 84
 indent_type = "Tabs"
 indent_width = 4
 quote_style = "AutoPreferDouble"

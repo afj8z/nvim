@@ -16,6 +16,8 @@ utils.lazy_on_filetype("Conform", {
 	"bash",
 	"shellscript",
 	"kbd",
+	"c",
+	"cpp",
 }, function()
 	vim.pack.add({
 		{
@@ -48,7 +50,9 @@ utils.lazy_on_filetype("Conform", {
 			shellscript = { "prettierd", "prettier", stop_after_first = true },
 			markdown = { "prettierd", "prettier", stop_after_first = true },
 			stata = { "statafmt" },
-			kbd = { "joker" },
+			c = { "clang-format" },
+			cpp = { "clang-format" },
+			-- TODO: formatter for kanata (ft=kbd)
 		},
 		formatters = {
 			statafmt = {
@@ -66,6 +70,13 @@ utils.lazy_on_filetype("Conform", {
 				},
 				stdin = true,
 			},
+			["clang-format"] = {
+				command = "clang-format",
+				args = "--style='{BasedOnStyle: GNU, IndentWidth: 4}'",
+			},
+			prettier = {
+				args = { "--config-precedence", "prefer-file" },
+			},
 		},
 	})
 	-- command defined in plugin/init.lua
@@ -75,9 +86,4 @@ utils.lazy_on_filetype("Conform", {
 
 	-- Allows eslint + prettier to work in tandem
 	-- Kept inside the callback so it only activates when formatting is actually needed
-	vim.api.nvim_create_autocmd("BufWritePre", {
-		callback = function()
-			vim.lsp.buf.format()
-		end,
-	})
 end)

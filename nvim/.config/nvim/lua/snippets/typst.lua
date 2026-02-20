@@ -11,6 +11,7 @@ local l = extras.lambda
 local rep = extras.rep
 local fmt = require("luasnip.extras.fmt").fmt
 local fmta = require("luasnip.extras.fmt").fmta
+local postfix = require("luasnip.extras.postfix").postfix
 local line_begin = require("luasnip.extras.expand_conditions").line_begin
 local mode = require("snippets.util.logic")
 local cstm_gen = require("snippets.util.format")
@@ -39,34 +40,44 @@ local not_math_s = mode.not_math_s
 local mapped_snippets = require("snippets.util.maps").return_map()
 
 return {
-
 	not_math_s(
 		"sepage",
 		fmta(
 			[[
-		#import "@local/conf:0.1.0": *
-		#import "@local/boxes:0.1.0": *
+		#import "@local/jome:0.1.0": *
 
-		#show: init_pageless.with(
-			norm: 11pt,
-			preset: "Aidan",
+		#show: jome.with(
+			theme: "primary",
+			mode: "light",
 			title: "<>",
-			subtitle: "<>",
-			lang: (setting: "de"),
-			color_theme: "light",
-			accent: (switch: true),
-			q_count: 0,
-		)
+			author: "Aidan Fleming",
+			fontfam: "serif",
+			docinfo: (
+				course: "<>",
+				subtitle: "",
+				org: "Universität Heidelberg",
+				),
+			)
 		<>
 		]],
 			{
-				f(dynamic_file_name),
-				d(1, generate_template),
+
+				f(dynamic_file_name, { 1 }, { user_args = { "type" } }),
+				f(dynamic_file_name, { 2 }, { user_args = { "class" } }),
+				-- d(1, generate_template),
 				i(0),
 			}
 		)
 	),
 }, {
+	s(
+		{ trig = "RR(.)", regTrig = true },
+		fmt("{}", {
+			f(function(_, snip)
+				return snip.captures[1]
+			end),
+		})
+	),
 	math_snippet(
 		"arr([%a])",
 		fmt("arrow.{} ", {
@@ -80,17 +91,23 @@ return {
 	-- ^asterisk (max etc)
 	math_snippet(
 		"([%a%)%]%}])%*%*",
-		fmt("{}^(*) {}", { f(function(_, snip)
-			return snip.captures[1]
-		end), i(0) }),
+		fmt(
+			"{}^(*) ",
+			{ f(function(_, snip)
+				return snip.captures[1]
+			end) }
+		),
 		{ regTrig = true, wordTrig = false }
 	),
 	-- log with subscript
 	math_snippet(
 		"ll(.*)%s",
-		fmt("log_({}) {}", { f(function(_, snip)
-			return snip.captures[1]
-		end), i(0) }),
+		fmt(
+			"log_({}) {}",
+			{ f(function(_, snip)
+				return snip.captures[1]
+			end), i(0) }
+		),
 		{ regTrig = true }
 	),
 	math_snippet(
@@ -109,15 +126,22 @@ return {
 	-- transposed matrix
 	math_snippet(
 		"([a-zA-Z%)%]%}])TT",
-		fmt("{}^(T) {}", { f(function(_, snip)
-			return snip.captures[1]
-		end), i(0) }),
+		fmt(
+			"{}^(T) {}",
+			{ f(function(_, snip)
+				return snip.captures[1]
+			end), i(0) }
+		),
 		{ regTrig = true, wordTrig = false }
 	),
 
 	math_snippet("kk", fmt("^({}) ", { i(1) }), { wordTrig = false }),
 	math_snippet("jj", fmt("_({}) ", { i(1) }), { wordTrig = false }),
-	math_snippet("JK", fmt("_({})^({}) ", { i(1), i(2) }), { wordTrig = false }),
+	math_snippet(
+		"JK",
+		fmt("_({})^({}) ", { i(1), i(2) }),
+		{ wordTrig = false }
+	),
 
 	math_snippet("int", fmt("integral_({})^({})", { i(1), i(2) })),
 	math_snippet("dvv", fmt("mat({}) dot vec({})", { i(1), i(2) })),
@@ -132,10 +156,11 @@ return {
 	),
 
 	math_snippet(
-		"fu([%a%d]*) ",
-		fmt("f_({})({}) ", {
-			d(1, return_capture, {}, { user_args = { "comma_num_down" } }),
-			i(2),
+		"([fFgG])([%a%d]*) ",
+		fmt("{}_({}{})", {
+			d(1, return_capture, {}),
+			d(2, return_capture, {}, { user_args = { "comma_num_down", 2 } }),
+			i(3),
 		}),
 		{ regTrig = true }
 	),
@@ -164,7 +189,11 @@ return {
 
 	math_snippet("sqr", fmt("sqrt({}) ", { i(1) })),
 
-	math_snippet("sum", fmt("sum_({})^({}) ", { i(1), i(2) })),
+	math_snippet(
+		"sum",
+		fmt("sum_({})^({})", { i(1), i(2) }),
+		{ name = "SUMMATH" }
+	),
 
 	math_snippet("lim", fmt("lim_({}) ", { i(1, "n -> oo") })),
 
@@ -182,11 +211,23 @@ return {
 
 	math_snippet("rng", fmt("underbrace({}, {}) ", { i(1), i(2) })),
 
-	math_snippet("([a-zA-Z])(%d+) ", { d(1, format_subscript) }, { regTrig = true, wordTrig = false }),
+	math_snippet(
+		"([a-zA-Z])(%d+) ",
+		{ d(1, format_subscript) },
+		{ regTrig = true, wordTrig = false }
+	),
 
-	math_snippet("([A-Z])([a-z]) ", { d(1, format_subscript) }, { regTrig = true, wordTrig = false }),
+	math_snippet(
+		"([A-Z])([a-z]) ",
+		{ d(1, format_subscript) },
+		{ regTrig = true, wordTrig = false }
+	),
 
-	math_snippet("(%d+)ff", { d(1, generate_fraction) }, { regTrig = true, wordTrig = false }),
+	math_snippet(
+		"(%d+)ff",
+		{ d(1, generate_fraction) },
+		{ regTrig = true, wordTrig = false }
+	),
 
 	math_snippet(
 		"(.*[%)]?[^%w%a])ff",
@@ -252,7 +293,11 @@ return {
 					local prefix = snip.captures[1] or ""
 					if (prefix == "b") or (prefix == "B") then
 						return '"["'
-					elseif (prefix == "p") or prefix == "v" or prefix == "V" then
+					elseif
+						(prefix == "p")
+						or prefix == "v"
+						or prefix == "V"
+					then
 						return '"{"'
 					else
 						return '"("'
@@ -277,17 +322,33 @@ return {
 		{ regTrig = true }
 	),
 
-	not_math_s("mm(.)", fmt("{} {}", { d(1, which_mode), i(0) }), { regTrig = true, wordTrig = true }),
+	not_math_s(
+		"mm(.)",
+		fmt("{} {}", { d(1, which_mode), i(0) }),
+		{ regTrig = true, wordTrig = true }
+	),
 
-	not_math_s("^(h)(%d)", fmt("{} {}", { d(1, heading_level), i(0) }), { regTrig = true, wordTrig = false }),
+	not_math_s(
+		"^[^%a+%d+]?(h)(%d)",
+		fmt("{} {}", { d(1, heading_level), i(0) }),
+		{ regTrig = true, wordTrig = false }
+	),
 
-	not_math_s("^(MM)", fmt("$\n	{}\n$\n{} ", { i(1), i(2) }), { regTrig = true }),
+	not_math_s(
+		"^(MM)",
+		fmt("$\n	{}\n$\n{} ", { i(1), i(2) }),
+		{ regTrig = true }
+	),
 
-	not_math_s("^(MM)", fmt("$\n	{}\n$\n{} ", { i(1), i(2) }), { regTrig = true }),
+	not_math_s(
+		"^(MM)",
+		fmt("$\n	{}\n$\n{} ", { i(1), i(2) }),
+		{ regTrig = true }
+	),
 
 	-- idk if their is an easier way to pass capture group indexes to
 	-- functions
-	math_snippet(
+	not_math_s(
 		"([%d]?)TEST(%d)",
 		fmt("first:{}second:{}", {
 			d(1, testarg, {}, { user_args = { 1 } }),
@@ -323,9 +384,21 @@ return {
 		-- 2. The final cursor position (i(0))
 		fmt("{}\n{}", {
 			-- Placeholder 1: Call the dynamic function
-			d(1, build_screenshot_node),
+			i(1),
 			i(0),
 		})
+	),
+
+	not_math_s(
+		"testsn",
+		fmt(
+			"{} some text between {}\nand some text on a new line with a {} node!",
+			{
+				i(1),
+				i(2),
+				i(0),
+			}
+		)
 	),
 	unpack(mapped_snippets),
 }

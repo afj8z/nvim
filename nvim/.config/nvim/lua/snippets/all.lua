@@ -41,11 +41,15 @@ for _, trigger in ipairs(n_pairs) do
 	local start_char = string.sub(trigger, 1, 1)
 	local end_char = string.sub(trigger, 2, 2)
 
-	local pair_snippet = s({ trig = trigger, wordTrig = false, snippetType = "autosnippet" }, {
-		t(start_char),
-		i(1),
-		t(end_char),
-	})
+	local pair_snippet = s(
+		{ trig = trigger, wordTrig = false, snippetType = "autosnippet" },
+		{
+			t(start_char),
+			i(1),
+			t(end_char),
+			i(0),
+		}
+	)
 
 	table.insert(mapped_snippets, pair_snippet)
 end

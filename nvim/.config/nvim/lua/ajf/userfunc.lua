@@ -3,7 +3,7 @@ local M = {}
 --- Toggles boolean words (true/false, True/False) under the cursor.
 -- If the word is not a boolean, it performs the default <C-a> action (increment number).
 function M.toggle_boolean_or_increment()
-	-- Get the word currently under the cursor
+	-- Get word under cursor
 	local word = vim.fn.expand("<cword>")
 
 	local toggles = {
@@ -92,9 +92,12 @@ local function find_word_in_dir(dir)
 	return nil
 end
 
-function M.get_local_word_dict()
-	local default_dict = vim.fs.normalize("~/personal/words.txt")
-	local sources = { default_dict }
+function M.get_local_word_dict(default_dict)
+	if default_dict == nil then
+		default_dict = "~/personal/words.txt"
+	end
+	local default_fixed = vim.fs.normalize(default_dict)
+	local sources = { default_fixed }
 	local word_dict_markers = { "local-words.txt" }
 
 	local root_dir = vim.fs.root(0, word_dict_markers)
@@ -320,6 +323,36 @@ function M.smart_enter()
 	else
 		plain_enter()
 	end
+end
+
+function M.close_buf_keep_layout()
+	local curr = vim.api.nvim_get_current_buf()
+	if vim.bo[curr].modified then
+		vim.notify("Buffer is modified. Save first!", vim.log.levels.WARN)
+		return
+	end
+
+	local target = vim.fn.bufnr("#")
+	if
+		target == -1
+		or target == curr
+		or not vim.api.nvim_buf_is_loaded(target)
+	then
+		local listed = vim.fn.getbufinfo({ buflisted = 1 })
+		-- Select the most recent buffer that isn't the current one
+		target = (#listed > 1)
+				and listed[#listed - (listed[#listed].bufnr == curr and 1 or 0)].bufnr
+			or vim.api.nvim_create_buf(true, false)
+	end
+
+	-- swap target into all windows holding the current buffer
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if vim.api.nvim_win_get_buf(win) == curr then
+			vim.api.nvim_win_set_buf(win, target)
+		end
+	end
+
+	vim.api.nvim_buf_delete(curr, { force = false })
 end
 
 return M

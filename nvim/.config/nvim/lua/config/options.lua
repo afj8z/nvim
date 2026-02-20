@@ -1,48 +1,58 @@
 local style = require("ajf.utils").get_settings()
-local vo = vim.opt
-local vg = vim.g
 local vc = vim.cmd
 
-vo.number = true
-vo.cursorcolumn = false
-vo.relativenumber = true
-vo.signcolumn = "yes:2"
-vo.termguicolors = true
-vo.scrolloff = 4
-vo.textwidth = 80
-vo.showtabline = 2
-vo.showmode = true
+local options = {
+	opt = {
+		conceallevel = 0,
+		concealcursor = "nc",
+		wrap = false,
+		tabstop = 4,
+		shiftwidth = 4,
+		smartindent = true,
+		number = true,
+		cursorcolumn = false,
+		relativenumber = true,
+		signcolumn = "yes:1",
+		termguicolors = true,
+		scrolloff = 4,
+		showmode = true,
+		undofile = true,
+		swapfile = false,
+		winborder = style.border,
+		splitright = true,
+		clipboard = "unnamedplus",
+		inccommand = "split",
+		incsearch = true,
+		ignorecase = true,
+		smartcase = true,
+		hlsearch = true,
+		title = true,
+		completeopt = { "menu", "menuone", "noselect" },
+		guicursor = "n-v-c:block,i-ci-r:block-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,o:hor400-Cursor",
+	},
+	g = {
+		have_nerd_font = true,
+		clipboard = "wl-copy",
+		tundra_biome = "custom",
+		color_pp = "alt",
+		-- unused built-ins
+		loaded_netrw = 1,
+		loaded_netrwPlugin = 1,
+		-- loaded_matchit = 1,
+		loaded_gzip = 1,
+		loaded_zip = 1,
+		loaded_zipPlugin = 1,
+		loaded_tar = 1,
+		loaded_tarPlugin = 1,
+		loaded_tutor = 1,
+	},
+}
 
-vo.undofile = true
-vo.swapfile = false
-vo.winborder = style.border
-vo.splitright = true
-vo.clipboard = "unnamedplus"
-vg.clipboard = "wl-copy"
-vo.inccommand = "split"
-vo.incsearch = true
-vo.ignorecase = true
-vo.smartcase = true
-vo.hlsearch = true
-vo.title = true
-
-vo.conceallevel = 0
-vo.concealcursor = "nc"
-vo.wrap = false
-vo.tabstop = 4
-vo.shiftwidth = 4
-vo.smartindent = true
-
-vg.have_nerd_font = true
-
-vo.completeopt = { "menu", "menuone", "noselect" }
-
--- Blink in insert mode
-vim.opt.guicursor =
-	"n-v-c:block,i-ci-r:block-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,o:hor400-Cursor"
+for scope, set in pairs(options) do
+	for k, v in pairs(set) do
+		vim[scope][k] = v
+	end
+end
 
 vc("set updatetime=750")
-
-vim.g.tundra_biome = "custom"
-vim.g.color_pp = "alt"
-vim.cmd("colorscheme tundra")
+vc("colorscheme tundra")

@@ -129,7 +129,7 @@ end
 
 function M.generate_cases(args, snip)
 	local rows = tonumber(snip.captures[1]) or 2 -- default option 2 for cases
-	local cols = 2                            -- fix to 2 cols
+	local cols = 2 -- fix to 2 cols
 	local nodes = {}
 	local ins_indx = 1
 	for j = 1, rows do
@@ -179,8 +179,8 @@ function M.format_symbol(args)
 	return ""
 end
 
-M.return_capture = function(args, parent, _, split_type)
-	local str = parent.captures[1]
+M.return_capture = function(args, parent, _, split_type, cap_num)
+	local str = parent.captures[cap_num] or parent.captures[1]
 
 	if split_type == "space" then
 		local split_text = {}
@@ -326,7 +326,7 @@ function M.build_screenshot_node(args, parent_snippet)
 		t('", size: '),
 		i(3, "8em"), -- Third stop
 		t({ ")", "#wrap-content(", "    [#" .. unique_name .. "],", "    [" }),
-		i(2, ""),    -- Second stop
+		i(2, ""), -- Second stop
 		t({ "],", "    column-gutter: 1em,", ")" }),
 	}
 
@@ -365,23 +365,47 @@ function M.generate_template(_, _)
 	return sn(nil, { t(dir_name) })
 end
 
-function M.get_dynamic_project_name()
+function M.get_dynamic_project_name(_, _, ret_type)
 	local filename = vim.fn.expand("%:t")
 
 	local dynamic_templates = {
-		["^hw(%d+)%.?.*$"] = "Homework %s",
-		["^tut(%d+)%.?.*$"] = "Tutorium %s",
-		["^mock(%d+)%.?.*$"] = "Mock Exam %s",
-		["^lec(%d+)%.?.*$"] = "Lecture %s",
-		["^q(%d+)%.?.*$"] = "Quiz %s",
-		["^abg(%d+)%.?.*$"] = "Abgabe %s",
+		["^.*_hom(%d+)%.?.*$"] = "Homework %s",
+		["^.*_tut(%d+)%.?.*$"] = "Tutorium %s",
+		["^.*_sum(%d+)%.?.*$"] = "Summary %s",
+		["^.*_exa(%d+)%.?.*$"] = "Exam Prep %s",
+		["^.*_lec(%d+)%.?.*$"] = "Lecture %s",
+		["^.*_rea(%d+)%.?.*$"] = "Reading %s",
+		["^.*_sub(%d+)%.?.*$"] = "Submission %s",
 	}
 
-	for pattern, template in pairs(dynamic_templates) do
-		local captured_number = string.match(filename, pattern)
+	local dynamic_fdelim = {
+		["^MAGW.*$"] = "Mathematik",
+		["^MAKR.*$"] = "Makroökonomik",
+		["^CORG.*$"] = "Corporate Governance",
+		["^amst.*$"] = "Allg. Meth. Statistik",
+		["^EVWL.*$"] = "",
+	}
+	if ret_type == "type" then
+		for pattern, template in pairs(dynamic_templates) do
+			local captured_number = string.match(filename, pattern)
 
-		if captured_number then
-			return string.format(template, captured_number)
+			if captured_number then
+				-- return sn(nil, { t(string.format(template, captured_number)) })
+				-- 	or "nil error type"
+				return string.format(template, captured_number)
+			end
+		end
+	end
+
+	if ret_type == "class" then
+		for pattern, template in pairs(dynamic_fdelim) do
+			local captured_name = string.match(filename, pattern)
+
+			if captured_name then
+				-- return sn(nil, { t(string.format(template)) })
+				-- 	or "nil error class"
+				return string.format(template)
+			end
 		end
 	end
 

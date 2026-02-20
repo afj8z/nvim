@@ -70,3 +70,36 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("VimResized", {
 	command = "wincmd =",
 })
+
+local groupname = "autoclose"
+vim.api.nvim_create_augroup(groupname, { clear = true })
+
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
+	group = groupname,
+	pattern = "*",
+	callback = function()
+		if vim.o.buftype == "quickfix" then
+			if vim.fn.winbufnr(2) == -1 then
+				vim.cmd.quit({ bang = true })
+			end
+		end
+	end,
+	once = true,
+})
+
+-- vim.api.nvim_create_autocmd("ModeChanged", {
+-- 	pattern = "*",
+-- 	callback = function()
+-- 		if
+-- 			(
+-- 				(vim.v.event.old_mode == "s" and vim.v.event.new_mode == "n")
+-- 				or vim.v.event.old_mode == "i"
+-- 			)
+-- 			and require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
+-- 			and not require("luasnip").session.jump_active
+-- 			and not require("luasnip").in_snippet()
+-- 		then
+-- 			require("luasnip").unlink_current()
+-- 		end
+-- 	end,
+-- })

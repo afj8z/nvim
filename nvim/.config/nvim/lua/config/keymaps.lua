@@ -2,8 +2,8 @@ local keyfunc = require("ajf.userfunc")
 local utils = require("ajf.utils")
 local map = vim.keymap.set
 local nmap = utils.nmap
-local imap = utils.imap
 local vmap = utils.vmap
+local k = vim.keycode
 
 -- set leader key
 vim.g.mapleader = " "
@@ -31,6 +31,23 @@ map({ "n", "v" }, "<leader>c", "1z=")
 map({ "n", "v" }, "<leader>n", ":norm ")
 nmap("<leader>lf", vim.lsp.buf.format)
 
+nmap("<CR>", function()
+	---@diagnostic disable-next-line: undefined-field
+	if vim.v.hlsearch == 1 then
+		vim.cmd.nohl()
+		return ""
+	else
+		return k("<CR>")
+	end
+end, { expr = true })
+
+nmap("<space>dt", function()
+	vim.lsp.inlay_hint.enable(
+		not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }),
+		{ bufnr = 0 }
+	)
+end)
+
 -- file navigation
 nmap("<leader>e", "<cmd>Oil<CR>", { silent = true })
 nmap(
@@ -43,7 +60,12 @@ nmap("<leader>E", "<cmd>tabnew | Oil<CR>", { silent = true })
 -- buffer nav
 nmap("<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
 nmap("<leader>bp", ":bprevious<CR>", { desc = "Previous buffer" })
-nmap("<leader>bd", ":bdelete<CR>", { desc = "Previous buffer" })
+nmap(
+	"<leader>bd",
+	keyfunc.close_buf_keep_layout,
+	{ desc = "Close buffer, keep layout" }
+)
+nmap("<leader>bD", ":bdelete<CR>", { desc = "Close buffer" })
 nmap("<leader>bb", ":e #<CR>")
 nmap("<leader>bs", ":vert sf #<CR>")
 
@@ -109,4 +131,5 @@ nmap("<leader>is", keyfunc.insert_screenshot, {
 	desc = "insert most recent screenshot in filetype dependant format",
 })
 
-imap("<CR>", keyfunc.smart_enter, { noremap = true })
+-- This still needs work
+-- imap("<CR>", keyfunc.smart_enter, { noremap = true })
