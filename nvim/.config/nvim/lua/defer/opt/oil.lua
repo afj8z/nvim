@@ -1,18 +1,4 @@
-local utils = require("ajf.utils")
-
-local oil_loaded = false
-local function load_and_remap_oil()
-	if oil_loaded then
-		return
-	end
-	oil_loaded = true
-
-	vim.pack.add({
-		{ src = "https://github.com/stevearc/oil.nvim" },
-		{ src = "https://github.com/JezerM/oil-lsp-diagnostics.nvim" },
-		{ src = "https://github.com/nvim-tree/nvim-web-devicons.git" },
-	})
-
+local function load_oil()
 	local sym = require("ajf.style").icons.diagnostics
 	local style = require("ajf.utils").get_settings()
 
@@ -22,7 +8,7 @@ local function load_and_remap_oil()
 			"icon",
 			"permissions",
 			-- "size",
-			-- "mtime",
+			"mtime",
 		},
 		skip_confirm_for_simple_edits = false,
 		prompt_save_on_select_new_entry = true,
@@ -65,4 +51,24 @@ local function load_and_remap_oil()
 	})
 end
 
-utils.command_stub("Oil", load_and_remap_oil)
+return {
+	name = "oil",
+	src = "https://github.com/stevearc/oil.nvim",
+	exts = {
+		{ "https://github.com/JezerM/oil-lsp-diagnostics.nvim" },
+		{
+			"https://github.com/malewicz1337/oil-git.nvim.git",
+			run = {
+				name = "oil-git",
+				opts = {
+					show_file_highlights = false,
+					show_directory_highlights = false,
+					symbol_position = "signcolumn",
+				},
+			},
+		},
+	},
+	cmds = "Oil",
+	load = load_oil,
+	libs = "devicons",
+}

@@ -60,5 +60,5 @@ return {
 }, {
 	-- Autosnippets
 	s("autotrig", t("autotriggered, if enabled")),
-	unpack(mapped_snippets),
+	-- unpack(mapped_snippets),
 }

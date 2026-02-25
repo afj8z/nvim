@@ -142,13 +142,7 @@ function M.insert_screenshot()
 	local function insert_lines(template)
 		for i, txt in ipairs(template) do
 			local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-			vim.api.nvim_buf_set_lines(
-				0,
-				row + i - 2,
-				row + i - 1,
-				false,
-				{ txt }
-			)
+			vim.api.nvim_buf_set_lines(0, row + i - 2, row + i - 1, false, { txt })
 		end
 	end
 
@@ -333,11 +327,7 @@ function M.close_buf_keep_layout()
 	end
 
 	local target = vim.fn.bufnr("#")
-	if
-		target == -1
-		or target == curr
-		or not vim.api.nvim_buf_is_loaded(target)
-	then
+	if target == -1 or target == curr or not vim.api.nvim_buf_is_loaded(target) then
 		local listed = vim.fn.getbufinfo({ buflisted = 1 })
 		-- Select the most recent buffer that isn't the current one
 		target = (#listed > 1)
@@ -353,6 +343,36 @@ function M.close_buf_keep_layout()
 	end
 
 	vim.api.nvim_buf_delete(curr, { force = false })
+end
+
+function M.smart_close_buffers()
+	local buflist = vim.fn.getbufinfo({ buflisted = 1 })
+
+	if #buflist <= 1 then
+		return
+	end
+
+	local current_buf = vim.api.nvim_get_current_buf()
+	local has_hidden = false
+
+	for _, buf in ipairs(buflist) do
+		if buf.hidden == 1 then
+			has_hidden = true
+			break
+		end
+	end
+
+	for _, buf in ipairs(buflist) do
+		if has_hidden then
+			if buf.hidden == 1 then
+				pcall(vim.api.nvim_buf_delete, buf.bufnr, { force = false })
+			end
+		else
+			if buf.bufnr ~= current_buf then
+				pcall(vim.api.nvim_buf_delete, buf.bufnr, { force = false })
+			end
+		end
+	end
 end
 
 return M

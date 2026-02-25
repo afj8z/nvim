@@ -1,10 +1,14 @@
-local utils = require("ajf.utils")
+local utils = require("defer")
 
 local controller_load_fn = utils.create_toggle_controller("Copilot", {
+
 	load = function()
-		vim.pack.add({
-			{ src = "https://github.com/zbirenbaum/copilot.lua.git" },
-		})
+		-- node not in sys PATH, so make available to Mason in nvim
+		local node_bin_path =
+			vim.fn.expand("$HOME/.config/nvm/versions/node/v24.12.0/bin") -- Update version if needed
+		if vim.fn.isdirectory(node_bin_path) == 1 then
+			vim.env.PATH = node_bin_path .. ":" .. vim.env.PATH
+		end
 		require("copilot").setup({
 			suggestion = {
 				enabled = true,
@@ -30,5 +34,9 @@ local controller_load_fn = utils.create_toggle_controller("Copilot", {
 	end,
 })
 
--- :Copilot command will also trigger the load
-utils.command_stub("Copilot", controller_load_fn)
+return {
+	name = "copilot",
+	src = "https://github.com/zbirenbaum/copilot.lua.git",
+	load = controller_load_fn,
+	cmds = { "Copilot" },
+}

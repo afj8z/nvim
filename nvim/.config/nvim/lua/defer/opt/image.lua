@@ -1,10 +1,7 @@
-local utils = require("ajf.utils")
+local utils = require("defer")
 
 local controller_load_fn = utils.create_toggle_controller("Image", {
 	load = function()
-		vim.pack.add({
-			{ src = "https://github.com/3rd/image.nvim" },
-		})
 		require("image").setup({
 			backend = "kitty",
 		})
@@ -19,4 +16,9 @@ local controller_load_fn = utils.create_toggle_controller("Image", {
 	end,
 })
 
-utils.command_stub("Image", controller_load_fn)
+return {
+	name = "image",
+	src = "https://github.com/3rd/image.nvim",
+	cmds = "Image",
+	load = controller_load_fn,
+}

@@ -91,12 +91,9 @@ return {
 	-- ^asterisk (max etc)
 	math_snippet(
 		"([%a%)%]%}])%*%*",
-		fmt(
-			"{}^(*) ",
-			{ f(function(_, snip)
-				return snip.captures[1]
-			end) }
-		),
+		fmt("{}^(*) ", { f(function(_, snip)
+			return snip.captures[1]
+		end) }),
 		{ regTrig = true, wordTrig = false }
 	),
 	-- log with subscript
@@ -137,11 +134,7 @@ return {
 
 	math_snippet("kk", fmt("^({}) ", { i(1) }), { wordTrig = false }),
 	math_snippet("jj", fmt("_({}) ", { i(1) }), { wordTrig = false }),
-	math_snippet(
-		"JK",
-		fmt("_({})^({}) ", { i(1), i(2) }),
-		{ wordTrig = false }
-	),
+	math_snippet("JK", fmt("_({})^({}) ", { i(1), i(2) }), { wordTrig = false }),
 
 	math_snippet("int", fmt("integral_({})^({})", { i(1), i(2) })),
 	math_snippet("dvv", fmt("mat({}) dot vec({})", { i(1), i(2) })),
@@ -189,11 +182,7 @@ return {
 
 	math_snippet("sqr", fmt("sqrt({}) ", { i(1) })),
 
-	math_snippet(
-		"sum",
-		fmt("sum_({})^({})", { i(1), i(2) }),
-		{ name = "SUMMATH" }
-	),
+	math_snippet("sum", fmt("sum_({})^({})", { i(1), i(2) }), { name = "SUMMATH" }),
 
 	math_snippet("lim", fmt("lim_({}) ", { i(1, "n -> oo") })),
 
@@ -293,11 +282,7 @@ return {
 					local prefix = snip.captures[1] or ""
 					if (prefix == "b") or (prefix == "B") then
 						return '"["'
-					elseif
-						(prefix == "p")
-						or prefix == "v"
-						or prefix == "V"
-					then
+					elseif (prefix == "p") or prefix == "v" or prefix == "V" then
 						return '"{"'
 					else
 						return '"("'
@@ -334,17 +319,9 @@ return {
 		{ regTrig = true, wordTrig = false }
 	),
 
-	not_math_s(
-		"^(MM)",
-		fmt("$\n	{}\n$\n{} ", { i(1), i(2) }),
-		{ regTrig = true }
-	),
+	not_math_s("^(MM)", fmt("$\n	{}\n$\n{} ", { i(1), i(2) }), { regTrig = true }),
 
-	not_math_s(
-		"^(MM)",
-		fmt("$\n	{}\n$\n{} ", { i(1), i(2) }),
-		{ regTrig = true }
-	),
+	not_math_s("^(MM)", fmt("$\n	{}\n$\n{} ", { i(1), i(2) }), { regTrig = true }),
 
 	-- idk if their is an easier way to pass capture group indexes to
 	-- functions

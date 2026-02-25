@@ -1,4 +1,4 @@
-require("ajf.utils").load_modules("config", {
+require("defer").load_modules("config", {
 	"options",
 	"autocmd",
 	"keymaps",

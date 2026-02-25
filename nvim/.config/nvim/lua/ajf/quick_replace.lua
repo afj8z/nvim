@@ -60,10 +60,7 @@ M.run = function()
 							-- Execute Pipeline
 							local success, _ = pcall(function()
 								vim.cmd(
-									"vimgrep /"
-										.. esc_target
-										.. "/g "
-										.. location
+									"vimgrep /" .. esc_target .. "/g " .. location
 								)
 							end)
 
@@ -83,8 +80,7 @@ M.run = function()
 								esc_target,
 								esc_replacement
 							)
-							local replace_success, replace_err =
-								pcall(vim.cmd, cmd)
+							local replace_success, replace_err = pcall(vim.cmd, cmd)
 
 							if replace_success then
 								vim.notify(

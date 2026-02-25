@@ -11,25 +11,15 @@ vim.g.maplocalleader = " "
 map({ "n", "v" }, "<leader>", "<nop>")
 
 -- editor operations
-nmap("<leader>o", ":update<CR> :source<CR>")
-nmap("<leader>w", "<Cmd>write<CR>")
+-- nmap("<leader>o", ":update<CR> :source<CR>")
+nmap("<leader>w", "<Cmd>write<CR>", { silent = true })
 nmap("<leader>q", "<Cmd>:quit<CR>")
-nmap("<leader>Q", "<Cmd>:wqa<CR>")
-
--- substitute text
-vmap("<leader>s", [["hy:%s/<C-r>h/<C-r>h/gI<Left><Left><left>]])
-nmap(
-	"<leader>s",
-	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-	{ silent = false }
-)
 
 -- spell
 map({ "n", "v" }, "<leader>c", "1z=")
 
 -- editor commands
 map({ "n", "v" }, "<leader>n", ":norm ")
-nmap("<leader>lf", vim.lsp.buf.format)
 
 nmap("<CR>", function()
 	---@diagnostic disable-next-line: undefined-field
@@ -41,21 +31,8 @@ nmap("<CR>", function()
 	end
 end, { expr = true })
 
-nmap("<space>dt", function()
-	vim.lsp.inlay_hint.enable(
-		not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }),
-		{ bufnr = 0 }
-	)
-end)
-
 -- file navigation
 nmap("<leader>e", "<cmd>Oil<CR>", { silent = true })
-nmap(
-	"<leader>te",
-	"<cmd>lua local dir = vim.fn.expand('%:p:h'); vim.cmd('tabnew | Oil ' .. dir)<CR>",
-	{ silent = true }
-)
-nmap("<leader>E", "<cmd>tabnew | Oil<CR>", { silent = true })
 
 -- buffer nav
 nmap("<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
@@ -65,71 +42,54 @@ nmap(
 	keyfunc.close_buf_keep_layout,
 	{ desc = "Close buffer, keep layout" }
 )
-nmap("<leader>bD", ":bdelete<CR>", { desc = "Close buffer" })
 nmap("<leader>bb", ":e #<CR>")
 nmap("<leader>bs", ":vert sf #<CR>")
+nmap("<leader>bx", keyfunc.smart_close_buffers, { desc = "Close hidden buffers" })
 
 -- tab nav
-for i = 1, 8 do
-	map({ "n", "t" }, "<Leader>" .. i, "<Cmd>tabnext " .. i .. "<CR>")
-end
 nmap("<leader>td", "<cmd>tabclose<CR>")
 nmap("<leader>tt", "<cmd>tabnew<CR>")
 
 -- win resizing
-nmap("<leader>>", "<cmd>vertical resize +8<CR>")
-nmap("<leader><", "<cmd>vertical resize -8<CR>")
-nmap("<leader>-", "<cmd>resize +5<CR>")
-nmap("<leader>+", "<cmd>resize -5<CR>")
+nmap("<C-h>", "<C-w>h")
+nmap("<C-j>", "<C-w>j")
+nmap("<C-k>", "<C-w>k")
+nmap("<C-l>", "<C-w>l")
+nmap(">", "<cmd>vertical resize +8<CR>")
+nmap("<", "<cmd>vertical resize -8<CR>")
+nmap("-", "<cmd>resize +5<CR>")
+nmap("+", "<cmd>resize -5<CR>")
 
 -- improve commands with motions
 nmap("n", "nzzzv")
 nmap("N", "Nzzzv")
-nmap("<C-u", "<C-u>zzzv")
+nmap("<C-u>", "<C-u>zzzv")
 nmap("<C-d>", "<C-d>zzzv")
+nmap("<C-f>", "<C-f>zzzv")
+nmap("<C-b>", "<C-b>zzzv")
 
+---Text Blocks
 -- smarter indenting
-nmap("<", "<<")
-nmap(">", ">>")
 vmap("<", "<gv")
 vmap(">", ">gv")
+vmap("J", ":m '>+1<CR>gv=gv")
+vmap("K", ":m '<-2<CR>gv=gv")
 
 map({ "n", "v", "o" }, "H", "^")
 map({ "n", "v", "o" }, "L", "$")
-
-nmap("gb", "<C-w>w")
-nmap("gB", "<C-w>W")
 
 nmap("x", '"_x')
 nmap("s", '"_s')
 nmap("X", '"_X')
 
--- ** Text editing **
-nmap("ryw", "viwpyiw", {
-	desc = "replace a word with yanked text, dont write to register",
-})
 nmap("rw", "viwp", {
 	desc = "replace a word with yanked text",
 })
 nmap("S", "ciw")
 nmap("<leader>p", ":TypstPreviewToggle<CR>")
 
--- custom functions
-nmap("<Leader>L", keyfunc.ToggleCursorLine, {
-	desc = "toggle highlight full cursor line",
-})
-
-nmap("<C-A>", keyfunc.toggle_boolean_or_increment, {
+nmap("<C-a>", keyfunc.toggle_boolean_or_increment, {
 	noremap = true,
 	silent = true,
 	desc = "Increment number or toggle (true|false)",
 })
-
-nmap("<leader>is", keyfunc.insert_screenshot, {
-	noremap = true,
-	silent = true,
-	desc = "insert most recent screenshot in filetype dependant format",
-})
-
--- This still needs work
--- imap("<CR>", keyfunc.smart_enter, { noremap = true })

@@ -1,21 +1,7 @@
-local utils = require("ajf.utils")
-local c = require("ajf.colors")
-local nmap = utils.nmap
-local bindmap = utils.bind_map_pre_stub
+local nmap = require("ajf.utils").nmap
+local bindmap = require("defer").bind_map_pre_stub
 
-local telescope_loaded = false
 local function load_and_remap_telescope()
-	if telescope_loaded then
-		return
-	end
-	telescope_loaded = true
-
-	vim.pack.add({
-		{ src = "https://github.com/nvim-telescope/telescope.nvim" },
-		{ src = "https://github.com/nvim-lua/plenary.nvim" },
-		{ src = "https://github.com/nvim-tree/nvim-web-devicons.git" },
-	})
-
 	local telescope = require("telescope")
 
 	telescope.setup({
@@ -78,24 +64,26 @@ local function load_and_remap_telescope()
 	bindmap(nmap, pick_map, opts)
 end
 
-local stub_map = {
-	["<leader>fi"] = "Telescope picker: grep_string",
-	["<leader>fo"] = "Telescope picker: oldfiles",
-	["<leader>fh"] = "Telescope picker: help_tags",
-	["<leader>fm"] = "Telescope picker: man_pages",
-	["<leader>fr"] = "Telescope picker: lsp_references",
-	["<leader>fd"] = "Telescope picker: diagnostics",
-	["<leader>fI"] = "Telescope picker: lsp_implementations",
-	["<leader>fT"] = "Telescope picker: lsp_type_definitions",
-	["<leader>fs"] = "Telescope picker: current_buffer_fuzzy_find",
-	["<leader>ft"] = "Telescope picker: builtin",
-	["<leader>fc"] = "Telescope picker: git_bcommits",
-	["<leader>fk"] = "Telescope picker: keymaps",
-	["<leader>fg"] = "Telescope picker: live_grep",
-	["<leader>ff"] = "Telescope picker: find_files",
-	["<leader>fb"] = "Telescope picker: buffers",
+return {
+	name = "telescope",
+	src = "https://github.com/nvim-telescope/telescope.nvim",
+	load = load_and_remap_telescope,
+	keys = {
+		{ "n", "<leader>fi", desc = "Telescope picker: grep_string" },
+		{ "n", "<leader>fo", desc = "Telescope picker: oldfiles" },
+		{ "n", "<leader>fh", desc = "Telescope picker: help_tags" },
+		{ "n", "<leader>fm", desc = "Telescope picker: man_pages" },
+		{ "n", "<leader>fr", desc = "Telescope picker: lsp_references" },
+		{ "n", "<leader>fd", desc = "Telescope picker: diagnostics" },
+		{ "n", "<leader>fI", desc = "Telescope picker: lsp_implementations" },
+		{ "n", "<leader>fT", desc = "Telescope picker: lsp_type_definitions" },
+		{ "n", "<leader>fs", desc = "Telescope picker: current_buffer_fuzzy_find" },
+		{ "n", "<leader>ft", desc = "Telescope picker: builtin" },
+		{ "n", "<leader>fc", desc = "Telescope picker: git_bcommits" },
+		{ "n", "<leader>fk", desc = "Telescope picker: keymaps" },
+		{ "n", "<leader>fg", desc = "Telescope picker: live_grep" },
+		{ "n", "<leader>ff", desc = "Telescope picker: find_files" },
+		{ "n", "<leader>fb", desc = "Telescope picker: buffers" },
+	},
+	libs = { "plenary", "devicons" },
 }
-
-for key, describe in pairs(stub_map) do
-	utils.keymap_stub("n", key, load_and_remap_telescope, { desc = describe })
-end

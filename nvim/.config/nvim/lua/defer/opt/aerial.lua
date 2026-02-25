@@ -1,16 +1,7 @@
 local utils = require("ajf.utils")
 local nmap = utils.nmap
 
-local aerial_loaded = false
 local function load_and_remap_aerial()
-	if aerial_loaded then
-		return
-	end
-	aerial_loaded = true
-
-	vim.pack.add({
-		{ src = "https://github.com/stevearc/aerial.nvim.git" },
-	})
 	local custom_syms = {
 		["Heading"] = {
 			reg = 255,
@@ -68,18 +59,15 @@ local function load_and_remap_aerial()
 		end
 	end
 
-	-- Setup Icon Highlights
+	-- setup icon highlights
 	for _, k in pairs(include_syms) do
 		local icon_data = require("ajf.style").icons.symbol_kinds[k]
 		if icon_data then
 			local custom_def = custom_syms[k]
 			local applied_bg = nil
 
-			-- 1. Determine the target Background color based on 'rev'
 			if type(custom_def) == "table" and custom_def.hl then
 				if custom_def.hl.rev then
-					-- If Reversed: Icon BG comes from the source 'fg' group (inheriting its fg color)
-					-- Matches your text logic: opts.bg = ...name=def.hl.fg... .fg
 					if custom_def.hl.fg then
 						applied_bg = vim.api.nvim_get_hl(
 							0,
@@ -87,7 +75,6 @@ local function load_and_remap_aerial()
 						).fg
 					end
 				else
-					-- Normal: Icon BG comes from the source 'bg' group (inheriting its bg color)
 					if custom_def.hl.bg then
 						applied_bg = vim.api.nvim_get_hl(
 							0,
@@ -97,20 +84,15 @@ local function load_and_remap_aerial()
 				end
 			end
 
-			-- 2. Apply the Highlight
 			if applied_bg then
-				-- Keep standard icon Foreground, but force the calculated Background
-				local standard_fg = vim.api.nvim_get_hl(
-					0,
-					{ name = icon_data.hl, link = false }
-				).fg
+				local standard_fg =
+					vim.api.nvim_get_hl(0, { name = icon_data.hl, link = false }).fg
 
 				vim.api.nvim_set_hl(0, "Aerial" .. k .. "Icon", {
 					fg = standard_fg,
 					bg = applied_bg,
 				})
 			else
-				-- Fallback: Just link to the standard icon group
 				vim.api.nvim_set_hl(
 					0,
 					"Aerial" .. k .. "Icon",
@@ -202,8 +184,6 @@ local function load_and_remap_aerial()
 					).fg
 				end
 
-				-- 2. Take the BG color of the source (e.g. "NormalFloat" hex)
-				--    and assign it to the FG of the Aerial symbol.
 				if def.hl.bg then
 					opts.fg = vim.api.nvim_get_hl(
 						0,
@@ -239,15 +219,18 @@ local function load_and_remap_aerial()
 	)
 end
 
-utils.command_stub("AerialToggle", load_and_remap_aerial)
+return {
+	name = "aerial",
+	src = "https://github.com/stevearc/aerial.nvim.git",
+	load = load_and_remap_aerial,
+	keys = {
+		{ "n", "}", desc = "Goto next Symbol in Outline" },
+		{ "n", "{", desc = "Goto previous Symbol in Outline" },
+		{ "n", "<leader>o", desc = "Show file Outline" },
+		{ "n", "<leader>/", desc = "Show file Outline Navigation Window" },
+	},
 
-local kmap = {
-	["}"] = "Goto next Symbol in Outline",
-	["{"] = "Goto previous Symbol in Outline",
-	["<leader>o"] = "Show file Outline",
-	["<leader>/"] = "Show file Outline Navigation Window",
+	cmds = {
+		"AerialToggle",
+	},
 }
-
-for k, v in pairs(kmap) do
-	utils.keymap_stub("n", k, load_and_remap_aerial, { desc = v })
-end

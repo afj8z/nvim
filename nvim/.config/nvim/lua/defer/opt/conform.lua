@@ -1,30 +1,4 @@
-local utils = require("ajf.utils")
-
-utils.lazy_on_filetype("Conform", {
-	"typst",
-	"python",
-	"lua",
-	"javascript",
-	"javascriptreact",
-	"typescript",
-	"typescriptreact",
-	"json",
-	"markdown",
-	"stata",
-	"sh",
-	"zsh",
-	"bash",
-	"shellscript",
-	"kbd",
-	"c",
-	"cpp",
-}, function()
-	vim.pack.add({
-		{
-			src = "https://github.com/stevearc/conform.nvim",
-		},
-	})
-
+local function load_conform()
 	require("conform").setup({
 		format_on_save = {
 			timeout_ms = 1000,
@@ -53,6 +27,7 @@ utils.lazy_on_filetype("Conform", {
 			c = { "clang-format" },
 			cpp = { "clang-format" },
 			-- TODO: formatter for kanata (ft=kbd)
+			-- WARN: something
 		},
 		formatters = {
 			statafmt = {
@@ -86,4 +61,29 @@ utils.lazy_on_filetype("Conform", {
 
 	-- Allows eslint + prettier to work in tandem
 	-- Kept inside the callback so it only activates when formatting is actually needed
-end)
+end
+
+return {
+	name = "conform",
+	src = "https://github.com/stevearc/conform.nvim",
+	ft = {
+		"typst",
+		"python",
+		"lua",
+		"javascript",
+		"javascriptreact",
+		"typescript",
+		"typescriptreact",
+		"json",
+		"markdown",
+		"stata",
+		"sh",
+		"zsh",
+		"bash",
+		"shellscript",
+		"kbd",
+		"c",
+		"cpp",
+	},
+	load = load_conform,
+}

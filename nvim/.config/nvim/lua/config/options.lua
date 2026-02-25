@@ -29,6 +29,7 @@ local options = {
 		title = true,
 		completeopt = { "menu", "menuone", "noselect" },
 		guicursor = "n-v-c:block,i-ci-r:block-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,o:hor400-Cursor",
+		iskeyword = "@,48-57,192-255",
 	},
 	g = {
 		have_nerd_font = true,

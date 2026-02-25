@@ -1,5 +1,3 @@
-local utils = require("ajf.utils")
-
 local function is_image_loaded()
 	local plug = vim.pack.get({ "image.nvim" })
 	local dta = table.remove(plug, 1)
@@ -12,20 +10,8 @@ local function is_image_loaded()
 	end
 end
 
-local leetcode_loaded = false
-local function load_and_remap_leetcode()
-	if leetcode_loaded then
-		return
-	end
-	leetcode_loaded = true
+local function load_leetcode()
 	vim.cmd("TSUpdate html")
-
-	vim.pack.add({
-		{ src = "https://github.com/kawre/leetcode.nvim.git" },
-		{ src = "https://github.com/nvim-lua/plenary.nvim" },
-		{ src = "https://github.com/MunifTanjim/nui.nvim" },
-		{ src = "https://github.com/nvim-telescope/telescope.nvim" },
-	})
 
 	is_image_loaded()
 
@@ -43,4 +29,11 @@ local function load_and_remap_leetcode()
 	})
 end
 
-utils.command_stub("Leet", load_and_remap_leetcode)
+return {
+	name = "leetcode",
+	src = "https://github.com/kawre/leetcode.nvim.git",
+	load = load_leetcode,
+	cmds = "Leet",
+	deps = "telescope",
+	libs = "plenary",
+}
