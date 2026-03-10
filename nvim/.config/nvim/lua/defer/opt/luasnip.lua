@@ -37,7 +37,7 @@ local function load_luasnip()
 				},
 				unvisited = {
 					-- Use virtual text to show a marker for empty nodes
-					virt_text = { { "●", "TESTCYAN" } },
+					virt_text = { { "●", "DiagnosticInfo" } },
 					-- "inline" places the marker exactly where the cursor will jump.
 					-- Use "overlay" or "eol" if you are on an older Neovim version.
 					virt_text_pos = "inline",

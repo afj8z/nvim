@@ -1,0 +1,1 @@
+/home/aidanfleming/src/tree-sitter-kanata/queries/highlights.scm

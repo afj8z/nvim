@@ -28,7 +28,7 @@ local options = {
 		hlsearch = true,
 		title = true,
 		completeopt = { "menu", "menuone", "noselect" },
-		guicursor = "n-v-c:block,i-ci-r:block-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,o:hor400-Cursor",
+		guicursor = "n-v-c:block,i-ci-r:block-blinkwait0-blinkoff50-blinkon50-Cursor/lCursor,o:hor10-Cursor",
 		iskeyword = "@,48-57,192-255",
 	},
 	g = {

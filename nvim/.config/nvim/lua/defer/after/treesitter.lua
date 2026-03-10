@@ -30,6 +30,7 @@ local function load_treesitter()
 		"cpp",
 		"typst",
 		"sql",
+		"kbd",
 	}
 
 	-- ts.install(ft_to_parse, { summary = false }):wait(30000)
@@ -46,8 +47,7 @@ local function load_treesitter()
 	-- 		if vim.fn.executable("node") == 1 then
 	-- 			local ok, task = pcall(ts.install, { lang }, { summary = true })
 	-- 			if ok then
-	-- 				task:wait(10000)
-	-- 			end
+	-- 				task:wait(10000) end
 	-- 		else
 	-- 			vim.notify("Node.js not found", vim.log.levels.WARN)
 	-- 			return
@@ -90,13 +90,32 @@ local function load_treesitter()
 		},
 	})
 
-	vim.treesitter.language.register("kanata", "kbd")
-	vim.treesitter.language.register("bash", "kitty")
-
 	-- Trigger treesitter for the current buffer dynamically
 	-- local current_buf = vim.api.nvim_get_current_buf()
 	-- local current_ft = vim.bo[current_buf].filetype
 	-- enable_and_install_ts(current_buf, current_ft)
+	-- Remove the vim.api.nvim_create_autocmd("User", { pattern = "TSUpdate", ... }) block
+
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "TSUpdate",
+		callback = function()
+			require("nvim-treesitter.parsers").kanata = {
+				install_info = {
+					path = "/home/aidanfleming/src/tree-sitter-kanata", -- Local directory
+					files = { "src/parser.c" },
+					generate = false,
+				},
+			}
+		end,
+	})
+
+	vim.filetype.add({
+		extension = {
+			kbd = "kanata",
+		},
+	})
+
+	vim.treesitter.language.register("kanata", "kbd")
 end
 
 return {

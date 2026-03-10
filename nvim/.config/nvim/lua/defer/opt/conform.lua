@@ -1,5 +1,6 @@
 local function load_conform()
 	require("conform").setup({
+		log_level = vim.log.levels.DEBUG,
 		format_on_save = {
 			timeout_ms = 1000,
 			lsp_format = "fallback",
@@ -20,16 +21,22 @@ local function load_conform()
 				"prettier",
 				stop_after_first = true,
 			},
-			json = { "prettierd", "prettier", stop_after_first = true },
-			shellscript = { "prettierd", "prettier", stop_after_first = true },
-			markdown = { "prettierd", "prettier", stop_after_first = true },
+			json = { "prettier", stop_after_first = true },
+			shellscript = { "prettier", stop_after_first = true },
+			markdown = { "prettier", stop_after_first = true },
 			stata = { "statafmt" },
 			c = { "clang-format" },
 			cpp = { "clang-format" },
+			kanata = { "kbdfmt" },
 			-- TODO: formatter for kanata (ft=kbd)
-			-- WARN: something
 		},
 		formatters = {
+
+			kbdmft = {
+				command = "kbdfmt",
+				args = { "--write", "%" },
+				stdin = true,
+			},
 			statafmt = {
 				command = "statafmt",
 				args = { "--width", "40", "--cont-indent", "2" },
@@ -49,18 +56,15 @@ local function load_conform()
 				command = "clang-format",
 				args = "--style='{BasedOnStyle: GNU, IndentWidth: 4}'",
 			},
-			prettier = {
-				args = { "--config-precedence", "prefer-file" },
-			},
+			-- prettier = {
+			-- 	args = { "--config-precedence", "prefer-file" },
+			-- },
 		},
 	})
-	-- command defined in plugin/init.lua
+
 	vim.api.nvim_create_user_command("ConformInfo", function()
 		require("conform.health").show_window()
 	end, { desc = "Show information about Conform formatters" })
-
-	-- Allows eslint + prettier to work in tandem
-	-- Kept inside the callback so it only activates when formatting is actually needed
 end
 
 return {
@@ -81,7 +85,7 @@ return {
 		"zsh",
 		"bash",
 		"shellscript",
-		"kbd",
+		"kanata",
 		"c",
 		"cpp",
 	},

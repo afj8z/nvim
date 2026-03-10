@@ -42,7 +42,7 @@ local function load_blinkcmp()
 			},
 		},
 		keymap = {
-			["<C-l>"] = { "select_and_accept", "fallback" },
+			["Tab"] = { "select_and_accept", "fallback" },
 		},
 		fuzzy = {
 			implementation = "prefer_rust_with_warning",
