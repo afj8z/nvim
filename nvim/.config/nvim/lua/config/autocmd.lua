@@ -71,11 +71,8 @@ vim.api.nvim_create_autocmd("VimResized", {
 	command = "wincmd =",
 })
 
-local groupname = "autoclose"
-vim.api.nvim_create_augroup(groupname, { clear = true })
-
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
-	group = groupname,
+	group = vim.api.nvim_create_augroup("autoclose", { clear = true }),
 	pattern = "*",
 	callback = function()
 		if vim.o.buftype == "quickfix" then
@@ -86,6 +83,26 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 	end,
 	once = true,
 })
+
+vim.api.nvim_create_autocmd({ "TermOpen" }, {
+	group = vim.api.nvim_create_augroup("custom-term-open", {}),
+	callback = function()
+		vim.opt_local.number = false
+		vim.opt_local.relativenumber = false
+		vim.opt_local.scrolloff = 0
+		vim.cmd("startinsert")
+		vim.bo.filetype = "terminal"
+	end,
+})
+
+vim.api.nvim_create_autocmd(
+	{ "BufEnter", "BufWinEnter", "WinEnter", "TermOpen", "TermEnter" },
+	{
+		group = vim.api.nvim_create_augroup("Term-Insert", { clear = true }),
+		pattern = "term://*",
+		command = "startinsert",
+	}
+)
 
 -- vim.api.nvim_create_autocmd("ModeChanged", {
 -- 	pattern = "*",

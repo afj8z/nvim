@@ -57,8 +57,8 @@ nmap("<C-k>", "<C-w>k")
 nmap("<C-l>", "<C-w>l")
 nmap(">", "<cmd>vertical resize +8<CR>")
 nmap("<", "<cmd>vertical resize -8<CR>")
-nmap("-", "<cmd>resize +5<CR>")
-nmap("+", "<cmd>resize -5<CR>")
+nmap("-", "<cmd>resize -5<CR>")
+nmap("+", "<cmd>resize +5<CR>")
 
 -- improve commands with motions
 nmap("n", "nzzzv")
@@ -87,6 +87,12 @@ nmap("rw", "viwp", {
 })
 nmap("S", "ciw")
 nmap("<leader>p", ":TypstPreviewToggle<CR>")
+
+map("t", "<esc>", "<c-\\><c-n>")
+map("t", "<C-k>", function()
+	vim.cmd.wincmd("k")
+end)
+nmap("<leader>T", keyfunc.toggle_terminal)
 
 nmap("<C-a>", keyfunc.toggle_boolean_or_increment, {
 	noremap = true,
