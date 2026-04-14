@@ -1,5 +1,29 @@
 local function load_surround()
-	require("mini.surround").setup({})
+	local utils = require("ajf.utils")
+	local nmap = utils.nmap
+
+	require("mini.surround").setup({
+		custom_surroundings = {
+			m = {
+				input = { "m" },
+				output = { left = "$", right = "$" },
+			},
+			c = {
+				input = { "c" },
+				output = { left = "{", right = "}" },
+			},
+
+			B = {
+				input = { "B" },
+				output = { left = '("', right = '")' },
+			},
+
+			s = {
+				input = { "s" },
+				output = { left = "*", right = "*" },
+			},
+		},
+	})
 end
 return {
 	name = "mini-surround",

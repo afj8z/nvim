@@ -70,11 +70,17 @@ local operator_map = {
 local mapped_snippets = {}
 
 for trigger, expansion in pairs(operator_map) do
-	table.insert(mapped_snippets, math_snippet(trigger, t(expansion .. " "), { wordTrig = true }))
+	table.insert(
+		mapped_snippets,
+		math_snippet(trigger, t(expansion .. " "), { wordTrig = true })
+	)
 end
 
 for trigger, expansion in pairs(greek_map) do
-	table.insert(mapped_snippets, math_snippet(trigger, { t(expansion .. " ") }, { wordTrig = true }))
+	table.insert(
+		mapped_snippets,
+		math_snippet(trigger, { t(expansion .. " ") }, { wordTrig = true })
+	)
 end
 
 function M.return_map()

@@ -17,6 +17,13 @@ return {
 				library = vim.api.nvim_get_runtime_file("", true),
 				checkThirdParty = false,
 			},
+			ignoreDir = {
+				".git",
+				".cache",
+				".vscode",
+				"node_modules",
+				-- "lazy",
+			},
 		},
 	},
 }

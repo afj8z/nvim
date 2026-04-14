@@ -54,7 +54,10 @@ local function load_conform()
 			},
 			["clang-format"] = {
 				command = "clang-format",
-				args = "--style='{BasedOnStyle: GNU, IndentWidth: 4}'",
+				args = {
+					"--style=file",
+					"--fallback-style=GNU",
+				},
 			},
 			-- prettier = {
 			-- 	args = { "--config-precedence", "prefer-file" },

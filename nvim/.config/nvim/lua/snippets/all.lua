@@ -26,32 +26,48 @@ local parse = require("luasnip.util.parser").parse_snippet
 local ms = ls.multi_snippet
 local k = require("luasnip.nodes.key_indexer").new_key
 
-local n_pairs = {
-	"''",
-	'""',
-	"()",
-	"{}",
-	"[]",
-	"<>",
+local npairs = {
+	{ "(", ")" },
+	{ "{", "}" },
+	{ "[", "]" },
+	{ "[", "]" },
+	{ '"', '"' },
 }
 
 local mapped_snippets = {}
+for _, trigger in pairs(npairs) do
+	local t1 = trigger[1]
+	local t2 = trigger[2]
 
-for _, trigger in ipairs(n_pairs) do
-	local start_char = string.sub(trigger, 1, 1)
-	local end_char = string.sub(trigger, 2, 2)
+	local snipp = s({ trig = t1, wordTrig = false, snippetType = "autosnippet" }, {
+		t(t1),
+		i(0),
+		t(t2),
+	}, {
+		condition = function()
+			local line = vim.api.nvim_get_current_line()
+			local _, col = unpack(vim.api.nvim_win_get_cursor(0))
+			local eol = string.sub(line, col + 1)
 
-	local pair_snippet = s(
-		{ trig = trigger, wordTrig = false, snippetType = "autosnippet" },
-		{
-			t(start_char),
-			i(1),
-			t(end_char),
-			i(0),
-		}
-	)
+			-- identical pairs
+			if t1 == t2 then
+				local _, count = string.gsub(line, "%" .. t1, "")
+				return count % 2 ~= 0
+			end
 
-	table.insert(mapped_snippets, pair_snippet)
+			-- distinct pairs
+			if not string.match(eol, "%" .. t2) then
+				return true
+			end
+
+			local _, open_count = string.gsub(line, "%" .. t1, "")
+			local _, close_count = string.gsub(line, "%" .. t2, "")
+
+			return open_count > close_count
+		end,
+	})
+
+	table.insert(mapped_snippets, snipp)
 end
 
 return {
@@ -60,5 +76,10 @@ return {
 }, {
 	-- Autosnippets
 	s("autotrig", t("autotriggered, if enabled")),
+	-- s("121", {
+	-- 	i(1, "INPUT"),
+	-- 	t({ "", "" }),
+	-- 	m(1, l._1:match(l._1:reverse()), "PALINDROME"),
+	-- }),
 	-- unpack(mapped_snippets),
 }

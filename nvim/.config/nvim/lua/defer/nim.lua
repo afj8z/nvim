@@ -6,7 +6,7 @@ local function load_nim()
 		redir = {
 			keymaps = {
 				-- "expand_cmd" captures the current command line and redirects output.
-				expand_cmd = "<C-v>",
+				expand_cmd = "<C-a>",
 			},
 		},
 		statusline = {
@@ -28,9 +28,13 @@ local function load_nim()
 						},
 					},
 				},
+				mode = {
+					name = "short",
+					markers = "-",
+				},
 			},
 			order = {
-				left = { "file", "snippet" },
+				left = { "mode", "file", "snippet" },
 				center = {},
 				right = { "lsp", "diagnostics", "position" },
 			},
@@ -46,7 +50,7 @@ local function load_nim()
 		},
 		snipshot = {
 			keymaps = {
-				paste_recent = "<leader>xx", -- e.g. "<Leader>p"
+				-- paste_recent = "<leader>xx", -- e.g. "<Leader>p"
 				browse_global = "<leader>xg", -- e.g. "<Leader>pg"
 				browse_local = "<leader>xl", -- e.g. "<Leader>pl"
 			},

@@ -81,24 +81,41 @@ function M.expand_equation(args, parent)
 	return sn(nil, { t(final_text) })
 end
 
+local events = require("luasnip.util.events")
+
 function M.which_math_mode(args, parent)
 	local input = parent.captures[1]
+
 	if input == " " then
 		return sn(nil, {
 			t("$"),
-			t({ "", "		" }),
+			t({ "", "        " }),
 			i(1),
 			t({ "", "$", "" }),
-			i(2),
 		})
 	else
-		-- Uses d(2) watching i(0)
 		return sn(nil, {
 			t("$"),
 			t(input),
 			i(1),
 			t("$"),
-			i(0),
+		}, {
+			callbacks = {
+				-- index `-1` means the callback is on the snippet as a whole
+				[-1] = {
+					[events.leave] = function()
+						vim.api.nvim_create_autocmd("InsertCharPre", {
+							buffer = 0,
+							once = true,
+							callback = function()
+								if string.match(vim.v.char, "[%a|%d]") then
+									vim.v.char = " " .. vim.v.char
+								end
+							end,
+						})
+					end,
+				},
+			},
 		})
 	end
 end
@@ -122,7 +139,7 @@ function M.generate_matrix(args, snip)
 		end
 		table.insert(nodes, t({ ";", "" }))
 	end
-	-- fix last node.
+	-- fix last node
 	nodes[#nodes] = t(";")
 	return sn(nil, nodes)
 end
@@ -225,18 +242,14 @@ end
 
 function M.frac_logic(args, parent)
 	local text = parent.captures[1]
-	-- Case 1
 	if text == "" then
 		return sn(nil, { t("frac("), i(1) })
 	end
 
-	-- Case 2 - failcase in rare situations that 1 doesnt trigger (dont know why
-	-- or how it works - it just does.)
 	if text:sub(-1) ~= ")" then
 		return sn(nil, { t(text .. "frac("), i(1) })
 	end
 
-	-- Case 3
 	if text:sub(-1) == ")" then
 		local balance = 1
 		local start_index = -1

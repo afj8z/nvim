@@ -3,7 +3,7 @@ local utils = require("defer")
 local controller_load_fn = utils.create_toggle_controller("Image", {
 	load = function()
 		require("image").setup({
-			backend = "kitty",
+			backend = "ueberzug",
 		})
 	end,
 
@@ -19,6 +19,5 @@ local controller_load_fn = utils.create_toggle_controller("Image", {
 return {
 	name = "image",
 	src = "https://github.com/3rd/image.nvim",
-	cmds = "Image",
 	load = controller_load_fn,
 }

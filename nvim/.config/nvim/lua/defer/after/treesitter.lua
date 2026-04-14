@@ -106,16 +106,25 @@ local function load_treesitter()
 					generate = false,
 				},
 			}
+			require("nvim-treesitter.parsers").wonkey = {
+				install_info = {
+					path = "/home/aidanfleming/dev/wonkey_parser/", -- Local directory
+					files = { "src/parser.c" },
+					generate = false,
+				},
+			}
 		end,
 	})
 
 	vim.filetype.add({
 		extension = {
 			kbd = "kanata",
+			h = "c",
 		},
 	})
 
 	vim.treesitter.language.register("kanata", "kbd")
+	vim.treesitter.language.register("wonkey", "wonkey")
 end
 
 return {

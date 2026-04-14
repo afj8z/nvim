@@ -47,16 +47,16 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-	group = vim.api.nvim_create_augroup("close_oil_with_q", { clear = true }),
-	desc = "Close oil buffer with <q> ",
-	pattern = {
-		"oil",
-	},
-	callback = function(args)
-		vim.keymap.set("n", "q", "<cmd>bdelete<cr>", { buffer = args.buf })
-	end,
-})
+-- vim.api.nvim_create_autocmd("FileType", {
+-- 	group = vim.api.nvim_create_augroup("close_oil_with_q", { clear = true }),
+-- 	desc = "Close oil buffer with <q> ",
+-- 	pattern = {
+-- 		"oil",
+-- 	},
+-- 	callback = function(args)
+-- 		vim.keymap.set("n", "q", "<cmd>bdelete<cr>", { buffer = args.buf })
+-- 	end,
+-- })
 
 -- Natural typing format options
 vim.api.nvim_create_autocmd("FileType", {
@@ -103,20 +103,3 @@ vim.api.nvim_create_autocmd(
 		command = "startinsert",
 	}
 )
-
--- vim.api.nvim_create_autocmd("ModeChanged", {
--- 	pattern = "*",
--- 	callback = function()
--- 		if
--- 			(
--- 				(vim.v.event.old_mode == "s" and vim.v.event.new_mode == "n")
--- 				or vim.v.event.old_mode == "i"
--- 			)
--- 			and require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
--- 			and not require("luasnip").session.jump_active
--- 			and not require("luasnip").in_snippet()
--- 		then
--- 			require("luasnip").unlink_current()
--- 		end
--- 	end,
--- })

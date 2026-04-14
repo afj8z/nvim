@@ -7,6 +7,8 @@ local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
 local extras = require("luasnip.extras")
+local m = extras.match
+local events = require("luasnip.util.events")
 local l = extras.lambda
 local rep = extras.rep
 local fmt = require("luasnip.extras.fmt").fmt
@@ -307,19 +309,48 @@ return {
 		{ regTrig = true }
 	),
 
-	not_math_s(
-		"mm(.)",
-		fmt("{} {}", { d(1, which_mode), i(0) }),
-		{ regTrig = true, wordTrig = true }
-	),
+	not_math_s("mm(.)", {
+		d(1, which_mode),
+	}, {
+		regTrig = true,
+		wordTrig = true,
+		-- callbacks = {
+		-- 	-- index `-1` means the callback is on the snippet as a whole
+		-- 	[-1] = {
+		-- 		[events.leave] = function()
+		-- 			vim.api.nvim_create_autocmd("InsertCharPre", {
+		-- 				buffer = 0,
+		-- 				once = true,
+		-- 				callback = function()
+		-- 					if string.match(vim.v.char, "^%a") then
+		-- 						vim.v.char = " " .. vim.v.char
+		-- 					end
+		-- 				end,
+		-- 			})
+		-- 		end,
+		-- 	},
+		-- },
+	}),
+	-- not_math_s(
+	-- 	"%$(.)",
+	-- 	fmt("{}", {
+	-- 		f(function(_, snip)
+	-- 			local char = snip.captures[1]
+	-- 			if string.match(char, "%a") then
+	-- 				return "$ " .. char
+	-- 			else
+	-- 				return "$" .. char
+	-- 			end
+	-- 		end),
+	-- 	}),
+	-- 	{ regTrig = true, wordTrig = false }
+	-- ),
 
 	not_math_s(
 		"^[^%a+%d+]?(h)(%d)",
 		fmt("{} {}", { d(1, heading_level), i(0) }),
 		{ regTrig = true, wordTrig = false }
 	),
-
-	not_math_s("^(MM)", fmt("$\n	{}\n$\n{} ", { i(1), i(2) }), { regTrig = true }),
 
 	not_math_s("^(MM)", fmt("$\n	{}\n$\n{} ", { i(1), i(2) }), { regTrig = true }),
 

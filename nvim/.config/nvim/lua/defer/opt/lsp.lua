@@ -42,7 +42,7 @@ local function load_lsp()
 			map("n", "<leader>da", vim.lsp.buf.code_action, opts)
 			map("n", "<leader>dd", function()
 				vim.diagnostic.open_float({
-					border = style.border,
+					border = style.border or "none",
 				})
 			end, opts)
 			map("n", "<space>dt", function()
@@ -54,7 +54,13 @@ local function load_lsp()
 		end,
 	})
 
-	-- This will trigger the actual server setups
+	vim.lsp.config("*", {
+		flags = {
+			debounce_text_changes = 1000,
+		},
+	})
+
+	-- trigger the server setups
 	vim.schedule(function()
 		-- specific check to ensure buffer is still valid and needs this
 		local buf = vim.api.nvim_get_current_buf()
@@ -67,6 +73,7 @@ local function load_lsp()
 	end)
 
 	vim.diagnostic.config({
+		update_in_insert = false,
 		underline = true,
 		virtual_text = false,
 		virtual_lines = false,

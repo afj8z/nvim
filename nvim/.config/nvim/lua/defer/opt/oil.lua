@@ -36,6 +36,28 @@ local function load_oil()
 		ssh = {
 			border = style.border,
 		},
+		keymaps = {
+			["q"] = {
+				desc = "Close Oil and restore previous buffer (keep tab)",
+				callback = function()
+					local alt_buf = vim.fn.bufnr("#")
+
+					-- Check if alternate buffer exists, is valid, and is listed
+					if
+						alt_buf ~= -1
+						and vim.api.nvim_buf_is_valid(alt_buf)
+						and vim.bo[alt_buf].buflisted
+					then
+						vim.cmd("buffer #")
+					else
+						-- Fallback if opened in a fresh tab: inject a scratch buffer
+						local scratch_buf = vim.api.nvim_create_buf(false, true)
+						vim.bo[scratch_buf].bufhidden = "wipe"
+						vim.api.nvim_win_set_buf(0, scratch_buf)
+					end
+				end,
+			},
+		},
 		keymaps_help = {
 			border = style.border,
 		},

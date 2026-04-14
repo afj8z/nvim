@@ -2,13 +2,10 @@ local function load_luasnip()
 	local utils = require("ajf.utils")
 	local ls = require("luasnip")
 	local types = require("luasnip.util.types")
+	local colors = require("ajf.colors")
 
 	-- testcolors
-	vim.api.nvim_set_hl(
-		0,
-		"TESTRED",
-		{ bg = "#ff0000", fg = "#ffffff", bold = true }
-	)
+	vim.api.nvim_set_hl(0, "__LuasnipActSnip", { bg = colors.comment })
 	vim.api.nvim_set_hl(
 		0,
 		"TESTYELLOW",
@@ -32,21 +29,16 @@ local function load_luasnip()
 		ext_opts = {
 			[types.insertNode] = {
 				active = {
-					-- Highlight text when focused (requires text to be visible)
-					hl_group = "TESTRED",
+					-- virt_text = { { "●", "DiagnosticInfo" } },
 				},
 				unvisited = {
-					-- Use virtual text to show a marker for empty nodes
+
 					virt_text = { { "●", "DiagnosticInfo" } },
-					-- "inline" places the marker exactly where the cursor will jump.
-					-- Use "overlay" or "eol" if you are on an older Neovim version.
 					virt_text_pos = "inline",
 				},
-				visited = {
-					hl_group = "TESTYELLOW",
-				},
-				-- 'passive' is the base for both visited and unvisited.
-				-- We generally don't want virt_text on visited nodes, so we don't put it here.
+				-- visited = {
+				-- 	hl_group = "Comment",
+				-- },
 				passive = {
 					hl_group = "TESTPURPLE",
 				},

@@ -2,6 +2,17 @@ local M = {}
 
 local sym = require("ajf.utils").get_settings().symbols
 
+function M.get(name)
+	if name == "" or name == nil then
+		return "A"
+	end
+	if not M.icons.symbol_kinds[name] then
+		return "A"
+	end
+
+	return M.icons.symbol_kinds[name]
+end
+
 --- Diagnostic severities.
 M.icons = {
 	diagnostics = {
@@ -18,17 +29,16 @@ M.icons = {
 		up = "",
 		down = "",
 	},
-
 	--- LSP symbol kinds.
 	symbol_kinds = {
-		Color = "󰏘",
-		Folder = "󰉋",
+		Color = { icon = "󰏘", hl = "Normal" },
+		Folder = { icon = "󰉋", hl = "Normal" },
 		Keyword = { icon = "󰌋", hl = "Function" },
-		Reference = "󰈇",
-		Snippet = "",
-		Text = "",
-		Unit = "",
-		Value = "󰎠",
+		Reference = { icon = "󰈇", hl = "Normal" },
+		Snippet = { icon = "", hl = "Normal" },
+		Text = { icon = "", hl = "Normal" },
+		Unit = { icon = "", hl = "Normal" },
+		Value = { icon = "󰎠", hl = "Normal" },
 		File = { icon = "󰈙", hl = "Identifier" },
 		Module = { icon = "󰆧", hl = "Include" },
 		Namespace = { icon = "󰅪", hl = "Include" },
@@ -63,6 +73,51 @@ M.icons = {
 		StaticMethod = { icon = "", hl = "Function" },
 		Macro = { icon = "", hl = "Function" },
 		Heading = { icon = "󰉴", hl = "Keyword" },
+	},
+
+	iconkinds = {
+		color = { icon = "󰏘", hl = "Normal" },
+		folder = { icon = "󰉋", hl = "Normal" },
+		keyword = { icon = "󰌋", hl = "Function" },
+		reference = { icon = "󰈇", hl = "Normal" },
+		snippet = { icon = "", hl = "Normal" },
+		text = { icon = "", hl = "Normal" },
+		unit = { icon = "", hl = "Normal" },
+		value = { icon = "󰎠", hl = "Normal" },
+		file = { icon = "󰈙", hl = "Identifier" },
+		module = { icon = "󰆧", hl = "Include" },
+		namespace = { icon = "󰅪", hl = "Include" },
+		package = { icon = "󰏗", hl = "Include" },
+		class = { icon = "", hl = "Type" },
+		method = { icon = "ƒ", hl = "Function" },
+		property = { icon = "󰜢", hl = "Identifier" },
+		field = { icon = "", hl = "@field" },
+		constructor = { icon = "", hl = "@constructor" },
+		enum = { icon = "", hl = "Number" },
+		interface = { icon = "", hl = "Type" },
+		["function"] = { icon = "󰊕", hl = "Function" },
+		variable = { icon = "󰀫", hl = "Variable" },
+		constant = { icon = "󰏿", hl = "Constant" },
+		string = { icon = "", hl = "String" },
+		number = { icon = "#", hl = "Number" },
+		boolean = { icon = "⊨", hl = "Boolean" },
+		array = { icon = "󰅪", hl = "@constructor" },
+		object = { icon = "⦿", hl = "Type" },
+		key = { icon = "🔐", hl = "Type" },
+		null = { icon = "NULL", hl = "Type" },
+		enumMember = { icon = "", hl = "Number" },
+		struct = { icon = "󰙅", hl = "Structure" },
+		event = { icon = "", hl = "Type" },
+		fCall = { icon = "󰅲", hl = "Function" },
+		operator = { icon = "󰆕", hl = "Operator" },
+		typeParameter = { icon = "𝙏", hl = "Identifier" },
+		component = { icon = "󰅴", hl = "Function" },
+		fragment = { icon = "󰅴", hl = "Constant" },
+		typeAlias = { icon = "", hl = "Type" },
+		parameter = { icon = "", hl = "Parameter" },
+		staticMethod = { icon = "", hl = "Function" },
+		macro = { icon = "", hl = "Function" },
+		heading = { icon = "󰉴", hl = "Keyword" },
 	},
 
 	--- Shared icons that don't really fit into a category.
