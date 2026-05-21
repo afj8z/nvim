@@ -1,5 +1,6 @@
 local nmap = require("ajf.utils").nmap
 local bindmap = require("defer").bind_map_pre_stub
+local screenshot = require("ajf.screenshot")
 
 local function load_and_remap_telescope()
 	local telescope = require("telescope")
@@ -31,7 +32,7 @@ local function load_and_remap_telescope()
 				n = { ["<C-h>"] = "which_key" },
 			},
 			preview = { treesitter = false },
-			color_devicons = true,
+			-- color_devicons = true,
 			layout_strategy = "horizontal_merged",
 			sorting_strategy = "ascending",
 			path_display = { "smart" },
@@ -41,11 +42,6 @@ local function load_and_remap_telescope()
 				results = { 1, 1, 0, 0 },
 			},
 			borderchars = { "", "", "", "", "", "", "", "" },
-			-- borderchars = {
-			-- 	prompt = { "", "", "", "", "", "", "", "" },
-			-- 	results = { "", "", "─", "│", "│", "", "─", "└" },
-			-- 	preview = { "─", "│", "─", " ", "─", "┐", "┘", "─" },
-			-- },
 			layout_config = {
 				height = 0.8,
 				width = 0.8,
@@ -74,7 +70,7 @@ local function load_and_remap_telescope()
 				-- defaults to {"png", "jpg", "mp4", "webm", "pdf"}
 				filetypes = { "png", "webp", "jpg", "jpeg" },
 				-- find command (defaults to `fd`)
-				find_cmd = "rg",
+				find_cmd = "find",
 			},
 		},
 	})
@@ -85,10 +81,11 @@ local function load_and_remap_telescope()
 	local opts = {
 		preview_title = false,
 		results_title = false,
-		-- prompt_title = false,
 		layout_config = {
-			preview_width = 0.6,
+			preview_width = 0.5,
 		},
+
+		disable_devicons = true,
 	}
 
 	local pick_map = {
@@ -108,6 +105,9 @@ local function load_and_remap_telescope()
 		["<leader>fb"] = builtin.buffers,
 		["<leader>fs"] = builtin.current_buffer_fuzzy_find,
 		["<leader>fp"] = require("telescope").extensions.media_files.media_files,
+		["<leader>y"] = screenshot.capture_and_insert,
+		["<leader>fyl"] = screenshot.pick_local,
+		["<leader>fyg"] = screenshot.pick_global,
 	}
 
 	bindmap(nmap, pick_map, opts)
@@ -139,6 +139,9 @@ return {
 		{ "n", "<leader>fg", desc = "Telescope picker: live_grep" },
 		{ "n", "<leader>ff", desc = "Telescope picker: find_files" },
 		{ "n", "<leader>fb", desc = "Telescope picker: buffers" },
+		{ "n", "<leader>y", desc = "Capture screenshot and insert image link" },
+		{ "n", "<leader>fyl", desc = "Telescope picker: local screenshots" },
+		{ "n", "<leader>fyg", desc = "Telescope picker: global screenshots" },
 	},
 	libs = { "plenary", "devicons" },
 }

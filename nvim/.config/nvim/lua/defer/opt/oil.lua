@@ -5,15 +5,34 @@ local function load_oil()
 	require("oil").setup({
 		default_file_explorer = true,
 		columns = {
-			"icon",
+			-- "icon",
 			"permissions",
-			-- "size",
+			"size",
 			"mtime",
 		},
 		skip_confirm_for_simple_edits = false,
 		prompt_save_on_select_new_entry = true,
+		constrain_cursor = "name",
 		view_options = {
 			show_hidden = true,
+			is_hidden_file = function(name, bufnr)
+				local fts = {
+					"pdf",
+					"svg",
+					"jpeg",
+					"jpg",
+					"png",
+					"o",
+				}
+				for _, ft in ipairs(fts) do
+					local m = name:match("%." .. ft .. "$")
+					if m then
+						return m ~= nil
+					end
+				end
+				local m = name:match("^%.")
+				return m ~= nil
+			end,
 			sort = {
 				{ "type", "asc" },
 				{ "name", "asc" },
@@ -42,7 +61,7 @@ local function load_oil()
 				callback = function()
 					local alt_buf = vim.fn.bufnr("#")
 
-					-- Check if alternate buffer exists, is valid, and is listed
+					-- check if alternate buffer exists, is valid, and is listed
 					if
 						alt_buf ~= -1
 						and vim.api.nvim_buf_is_valid(alt_buf)
@@ -50,13 +69,20 @@ local function load_oil()
 					then
 						vim.cmd("buffer #")
 					else
-						-- Fallback if opened in a fresh tab: inject a scratch buffer
+						-- fallback if opened in a fresh tab: inject a scratch buffer
 						local scratch_buf = vim.api.nvim_create_buf(false, true)
 						vim.bo[scratch_buf].bufhidden = "wipe"
 						vim.api.nvim_win_set_buf(0, scratch_buf)
 					end
 				end,
 			},
+			["<C-'>"] = {
+				"actions.select",
+				opts = { horizontal = true, split = "botright" },
+			},
+			["<C-S-%>"] = { "actions.select", opts = { vertical = true } },
+			["<C-j>"] = "actions.select",
+			["."] = { "actions.toggle_hidden", mode = "n" },
 		},
 		keymaps_help = {
 			border = style.border,

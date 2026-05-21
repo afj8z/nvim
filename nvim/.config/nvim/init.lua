@@ -32,6 +32,3 @@ require("config")
 require("defer").pre_setup({
 	init = vim.fn.stdpath("config") .. "/lua/defer/",
 })
-
--- Don't think i need this? Keep until sure aka passive debugging
--- require("ajf.style")

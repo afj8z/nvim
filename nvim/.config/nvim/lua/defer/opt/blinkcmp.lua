@@ -3,7 +3,7 @@ local function load_blinkcmp()
 		signature = { enabled = true },
 		completion = {
 			ghost_text = { enabled = false },
-			documentation = { auto_show = true, auto_show_delay_ms = 150 },
+			documentation = { auto_show = true, auto_show_delay_ms = 0 },
 			menu = {
 				auto_show = true,
 				-- max_height = 7,
@@ -12,11 +12,9 @@ local function load_blinkcmp()
 				draw = {
 					treesitter = { "lsp" },
 					columns = {
-
-						{ "kind_icon", gap = 1 },
+						{ "kind", gap = 1 },
 						{ "label", "label_description" },
 					},
-					-- components = {},
 				},
 			},
 			list = {
@@ -82,20 +80,6 @@ local function load_blinkcmp()
 			use_nvim_cmp_as_default = true,
 		},
 	})
-
-	-- vim.api.nvim_create_autocmd("User", {
-	-- 	pattern = "BlinkCmpMenuOpen",
-	-- 	callback = function()
-	-- 		vim.b.copilot_suggestion_hidden = true
-	-- 	end,
-	-- })
-	--
-	-- vim.api.nvim_create_autocmd("User", {
-	-- 	pattern = "BlinkCmpMenuClose",
-	-- 	callback = function()
-	-- 		vim.b.copilot_suggestion_hidden = false
-	-- 	end,
-	-- })
 end
 
 return {

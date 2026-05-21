@@ -47,17 +47,6 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- vim.api.nvim_create_autocmd("FileType", {
--- 	group = vim.api.nvim_create_augroup("close_oil_with_q", { clear = true }),
--- 	desc = "Close oil buffer with <q> ",
--- 	pattern = {
--- 		"oil",
--- 	},
--- 	callback = function(args)
--- 		vim.keymap.set("n", "q", "<cmd>bdelete<cr>", { buffer = args.buf })
--- 	end,
--- })
-
 -- Natural typing format options
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "*",
@@ -84,22 +73,31 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 	once = true,
 })
 
+-- window options for new :term windows
 vim.api.nvim_create_autocmd({ "TermOpen" }, {
 	group = vim.api.nvim_create_augroup("custom-term-open", {}),
 	callback = function()
 		vim.opt_local.number = false
 		vim.opt_local.relativenumber = false
 		vim.opt_local.scrolloff = 0
-		vim.cmd("startinsert")
-		vim.bo.filetype = "terminal"
+		-- vim.cmd("startinsert")
+		-- vim.bo.filetype = "terminal"
 	end,
 })
 
+-- always enter term windows in insert mode
 vim.api.nvim_create_autocmd(
 	{ "BufEnter", "BufWinEnter", "WinEnter", "TermOpen", "TermEnter" },
 	{
 		group = vim.api.nvim_create_augroup("Term-Insert", { clear = true }),
-		pattern = "term://*",
-		command = "startinsert",
+		pattern = { "*" },
+		callback = function()
+			if vim.opt.buftype:get() == "terminal" then
+				if vim.opt.filetype:get() == "iron" then
+					print("IRON LOADED")
+				end
+				vim.cmd(":startinsert")
+			end
+		end,
 	}
 )

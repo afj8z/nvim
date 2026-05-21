@@ -18,4 +18,7 @@ return {
 			{ src = "https://github.com/nvzone/volt.git" },
 		},
 	},
+	ignore = {
+		"shared.lua",
+	},
 }

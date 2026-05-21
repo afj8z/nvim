@@ -141,7 +141,7 @@ function M.insert_screenshot()
 
 	local function insert_lines(template)
 		for i, txt in ipairs(template) do
-			local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+			local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
 			vim.api.nvim_buf_set_lines(0, row + i - 2, row + i - 1, false, { txt })
 		end
 	end

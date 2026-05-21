@@ -16,6 +16,8 @@ local controller_load_fn = utils.create_toggle_controller("Image", {
 	end,
 })
 
+vim.keymap.set("n", "<leader>i", ":ImageToggle<CR>", { silent = true })
+
 return {
 	name = "image",
 	src = "https://github.com/3rd/image.nvim",

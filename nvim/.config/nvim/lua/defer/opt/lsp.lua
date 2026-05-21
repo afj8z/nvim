@@ -1,35 +1,13 @@
-local utils = require("ajf.utils")
-local style = utils.get_settings()
-local sym = require("ajf.style").icons.diagnostics
-local diagnostic = vim.diagnostic
-local map = vim.keymap.set
-
--- list of filetypes to trigger LSP loading
-local lsp_filetypes = {
-	"python",
-	"lua",
-	"rust",
-	"sh",
-	"zsh",
-	"bash",
-	"c",
-	"cpp",
-	"javascript",
-	"typescript",
-	"javascriptreact",
-	"typescriptreact",
-	"json",
-	"toml",
-	"typst",
-	"markdown",
-	"html",
-	"css",
-	"rst",
-	"kbd",
-	"sql",
-}
+local lsp_filetypes = require("defer.shared").lsp_filetypes
 
 local function load_lsp()
+	local utils = require("ajf.utils")
+	local style = utils.get_settings()
+	local sym = require("ajf.style").icons.diagnostics
+	local diagnostic = vim.diagnostic
+	local map = vim.keymap.set
+
+	-- list of filetypes to trigger LSP loading
 	-- LspAttach keymaps (Must be defined before servers attach)
 	vim.api.nvim_create_autocmd("LspAttach", {
 		group = vim.api.nvim_create_augroup("UserLspConfig", {}),
@@ -51,6 +29,22 @@ local function load_lsp()
 					{ bufnr = 0 }
 				)
 			end, opts)
+			map("n", "<leader>dp", function()
+				local params = vim.lsp.util.make_position_params(0, "utf-16")
+				return vim.lsp.buf_request(
+					0,
+					"textDocument/definition",
+					params,
+					function(_, result)
+						if result == nil or vim.tbl_isempty(result) then
+							return
+						end
+						vim.lsp.util.preview_location(result[1], {
+							border = style.border or "none",
+						})
+					end
+				)
+			end, { desc = "Peek definition", buffer = 0 })
 		end,
 	})
 

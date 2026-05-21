@@ -27,6 +27,9 @@ function M.vmap(lhs, rhs, opt)
 	vim.keymap.set("v", lhs, rhs, opt)
 end
 
+function M.tmap(lhs, rhs, opt)
+	vim.keymap.set("t", lhs, rhs, opt)
+end
 ---@param hl_map table Key: Highlight group. Value: Highlight options.
 function M.set_highlights(hl_map)
 	return function()

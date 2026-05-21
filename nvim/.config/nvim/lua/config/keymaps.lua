@@ -4,7 +4,13 @@ local map = vim.keymap.set
 local nmap = utils.nmap
 local vmap = utils.vmap
 local imap = utils.imap
+local tmap = utils.tmap
 local k = vim.keycode
+
+-- Bind the raw CSI u sequence for Ctrl-Shift-5
+vim.keymap.set({ "n", "v", "i" }, "<C-S-%>", function()
+	print("Raw C-S-5 triggered!")
+end, { desc = "Raw C-S-5 mapping" })
 
 -- set leader key
 vim.g.mapleader = " "
@@ -86,46 +92,14 @@ nmap("rw", "viwp", {
 nmap("S", "ciw")
 nmap("<leader>p", ":TypstPreviewToggle<CR>")
 
-map("t", "<esc>", "<c-\\><c-n>")
-map("t", "<C-k>", function()
-	vim.cmd.wincmd("k")
-end)
-nmap("<leader>T", keyfunc.toggle_terminal)
-
 nmap("<C-a>", keyfunc.toggle_boolean_or_increment, {
 	noremap = true,
 	silent = true,
 	desc = "Increment number or toggle (true|false)",
 })
 
-local calc_ns = vim.api.nvim_create_namespace("qalc_inline")
-
-local function numr_calc()
-	local row = vim.api.nvim_win_get_cursor(0)[1] - 1
-	local line = vim.api.nvim_get_current_line()
-	local result = vim.trim(vim.fn.system("qalc -t '" .. line .. "'"))
-	local nline = "= " .. (result:gsub("\n", " "))
-
-	vim.api.nvim_buf_set_extmark(0, calc_ns, row, 0, {
-		virt_text = { { nline, "Comment" } },
-		virt_text_pos = "eol",
-		id = 1,
-	})
-
-	vim.cmd("redraw")
-
-	local key = vim.fn.getcharstr()
-
-	vim.api.nvim_buf_del_extmark(0, calc_ns, 1)
-
-	if key == "\r" or key == "\n" then
-		vim.api.nvim_buf_set_lines(0, row + 1, row + 1, false, { nline })
-	else
-		vim.api.nvim_feedkeys(key, "m", true)
-	end
-end
-
-nmap("<leader>m", numr_calc)
+-- Terminal fixes
+tmap("<Esc>", "<C-\\><C-n>")
 
 -- Auto-pairs logic with escape closing/ insert closing
 local npairs = {
@@ -171,7 +145,7 @@ for _, trigger in pairs(npairs) do
 		return open_count >= close_count
 	end
 
-	vim.keymap.set("i", t1, function()
+	imap(t1, function()
 		if t1 == t2 and jump_pair() then
 			return "<Right>"
 		elseif condition() then
@@ -182,7 +156,7 @@ for _, trigger in pairs(npairs) do
 	end, { expr = true, replace_keycodes = true })
 
 	if t1 ~= t2 then
-		vim.keymap.set("i", t2, function()
+		imap(t2, function()
 			if jump_pair() then
 				return "<Right>"
 			else
@@ -257,3 +231,38 @@ for _, trigger in pairs(spairs) do
 		sur_wrd(t1, t2)
 	end)
 end
+
+local function smart_quote(inner)
+	local line = vim.api.nvim_get_current_line()
+	local col = vim.fn.col(".")
+	local best_quote = nil
+	local min_dist = math.huge
+
+	for _, quote in ipairs({ '"', "'", "`" }) do
+		local idx = 0
+		while true do
+			idx = string.find(line, quote, idx + 1, true)
+			if not idx then
+				break
+			end
+
+			local dist = math.abs(idx - col)
+			if dist < min_dist then
+				min_dist = dist
+				best_quote = quote
+			end
+		end
+	end
+
+	-- Default to double quote if none found on the current line
+	best_quote = best_quote or '"'
+
+	return (inner and "i" or "a") .. best_quote
+end
+
+map({ "x", "o" }, "iq", function()
+	return smart_quote(true)
+end, { expr = true, desc = "Inner generic quote" })
+map({ "x", "o" }, "aq", function()
+	return smart_quote(false)
+end, { expr = true, desc = "Around generic quote" })

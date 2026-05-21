@@ -29,6 +29,8 @@ local function load_mason()
 			"ts_ls",
 			"joker",
 			"sqls",
+			"r-languageserver",
+			"air",
 		},
 	})
 end

@@ -1,19 +1,19 @@
 local function load_flash()
 	require("flash").setup({
+
+		jump = {
+			pos = "end",
+		},
 		modes = {
 			char = {
-				jump_labels = true,
-
-				jump = {
-					autojump = true,
-				},
+				jump_labels = function(motion)
+					return vim.v.count == 0 and motion:find("[ftFT]")
+				end,
 			},
-		},
-		jump = {
-			autojump = true,
 		},
 	})
 end
+
 return {
 	name = "flash",
 	src = { src = "https://github.com/folke/flash.nvim.git" },

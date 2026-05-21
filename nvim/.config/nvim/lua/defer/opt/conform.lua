@@ -28,6 +28,7 @@ local function load_conform()
 			c = { "clang-format" },
 			cpp = { "clang-format" },
 			kanata = { "kbdfmt" },
+			r = { "air" },
 			-- TODO: formatter for kanata (ft=kbd)
 		},
 		formatters = {

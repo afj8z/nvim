@@ -54,5 +54,15 @@ for scope, set in pairs(options) do
 	end
 end
 
+local append = {
+	wildignore = ".doc,*.pdf,*.cbr,*.cbz,.o,*.obj,*.exe,*.dll",
+}
+
+for scope, add in pairs(append) do
+	vim.opt[scope]:append(add)
+end
+
+-- vim.opt.:append()
+
 vc("set updatetime=750")
 vc("colorscheme tundra")
