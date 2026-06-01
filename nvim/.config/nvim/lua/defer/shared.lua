@@ -23,6 +23,7 @@ M.lsp_filetypes = {
 	"sql",
 	"r",
 	"rmd",
+	"julia",
 }
 
 return M

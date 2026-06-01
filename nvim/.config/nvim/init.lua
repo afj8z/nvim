@@ -30,5 +30,6 @@ require("ajf.utils").set_settings(settings)
 require("config")
 
 require("defer").pre_setup({
+	width = { fill = true },
 	init = vim.fn.stdpath("config") .. "/lua/defer/",
 })

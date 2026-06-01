@@ -98,6 +98,8 @@ nmap("<C-a>", keyfunc.toggle_boolean_or_increment, {
 	desc = "Increment number or toggle (true|false)",
 })
 
+nmap("<leader>gf", keyfunc.copy_fname)
+
 -- Terminal fixes
 tmap("<Esc>", "<C-\\><C-n>")
 

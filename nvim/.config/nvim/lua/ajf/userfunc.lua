@@ -1,5 +1,10 @@
 local M = {}
 
+function M.copy_fname()
+	local fpath = vim.fn.expand("%:p")
+	vim.fn.setreg("+", fpath)
+end
+
 --- Toggles boolean words (true/false, True/False) under the cursor.
 -- If the word is not a boolean, it performs the default <C-a> action (increment number).
 function M.toggle_boolean_or_increment()

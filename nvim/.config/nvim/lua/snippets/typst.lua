@@ -1,20 +1,11 @@
 local ls = require("luasnip")
 local s = ls.snippet
-local sn = ls.snippet_node
 local t = ls.text_node
 local i = ls.insert_node
 local f = ls.function_node
-local c = ls.choice_node
 local d = ls.dynamic_node
-local extras = require("luasnip.extras")
-local m = extras.match
-local events = require("luasnip.util.events")
-local l = extras.lambda
-local rep = extras.rep
 local fmt = require("luasnip.extras.fmt").fmt
 local fmta = require("luasnip.extras.fmt").fmta
-local postfix = require("luasnip.extras.postfix").postfix
-local line_begin = require("luasnip.extras.expand_conditions").line_begin
 local mode = require("snippets.util.logic")
 local cstm_gen = require("snippets.util.format")
 local format_subscript = cstm_gen.format_subscript
@@ -46,20 +37,17 @@ return {
 		"sepage",
 		fmta(
 			[[
-		#import "@local/jome:0.1.0": *
+#import "@local/note:0.1.0": *
 
-		#show: jome.with(
-			theme: "primary",
-			mode: "light",
-			title: "<>",
-			author: "Aidan Fleming",
-			fontfam: "serif",
-			docinfo: (
-				course: "<>",
-				subtitle: "",
-				org: "Universität Heidelberg",
-				),
-			)
+#show: notes-template.with(
+    title: "<>",
+    subtitle: "",
+    author: "Aidan Fleming",
+    course: "<>",
+    style: "system",
+    theme: "system",
+    mode: "dark",
+)
 		<>
 		]],
 			{
@@ -72,14 +60,6 @@ return {
 		)
 	),
 }, {
-	s(
-		{ trig = "RR(.)", regTrig = true },
-		fmt("{}", {
-			f(function(_, snip)
-				return snip.captures[1]
-			end),
-		})
-	),
 	math_snippet(
 		"arr([%a])",
 		fmt("arrow.{} ", {
