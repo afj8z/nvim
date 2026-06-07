@@ -23,7 +23,7 @@ nmap("<leader>w", "<Cmd>write<CR>", { silent = true })
 nmap("<leader>q", "<Cmd>:quit<CR>")
 
 -- spell
-map({ "n", "v" }, "<leader>c", "1z=")
+-- map({ "n", "v" }, "<leader>c", "1z=")
 
 -- editor commands
 map({ "n", "v" }, "<leader>n", ":norm ")

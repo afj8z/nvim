@@ -1,5 +1,7 @@
 local function load_blinkcmp()
-	require("blink.cmp").setup({
+	local cmp = require("blink.cmp")
+	cmp.build():pwait()
+	cmp.setup({
 		signature = { enabled = true },
 		completion = {
 			ghost_text = { enabled = false },
@@ -86,10 +88,11 @@ return {
 	name = "blinkcmp",
 	src = {
 		"https://github.com/Saghen/blink.cmp",
-		version = "v1.6.0",
+		-- version = "v1.6.0",
 	},
 	event = "InsertEnter",
 	load = load_blinkcmp,
 	deps = "luasnip",
+	libs = "blinklib",
 	exts = { "https://github.com/xieyonn/blink-cmp-dat-word.git" },
 }

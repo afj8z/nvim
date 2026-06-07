@@ -142,7 +142,6 @@ local function load_and_remap_aerial()
 				depth = depth or 0
 				for _, item in ipairs(list) do
 					-- Calculate padding needed to stretch background
-					-- We assume a wide width (120) to cover the sidebar
 					local pad_target = 120
 					local current_len = string.len(item.name)
 

@@ -48,3 +48,7 @@ end, {
 	nargs = "*",
 	desc = "Run builtin :make and send errors to trouble.nvim",
 })
+
+add("Lp", function(opts)
+	vim.cmd("lua print(" .. opts.args .. ")")
+end, { nargs = "*" })

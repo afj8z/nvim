@@ -1,5 +1,4 @@
 return {
-
 	libs = {
 		{
 			"devicons",
@@ -16,6 +15,10 @@ return {
 		{
 			"volt",
 			{ src = "https://github.com/nvzone/volt.git" },
+		},
+		{
+			"blinklib",
+			{ src = "https://github.com/Saghen/blink.lib" },
 		},
 	},
 	ignore = {
