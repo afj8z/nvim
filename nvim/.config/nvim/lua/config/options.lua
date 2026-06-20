@@ -48,19 +48,17 @@ local options = {
 	},
 }
 
-for scope, set in pairs(options) do
-	for k, v in pairs(set) do
-		vim[scope][k] = v
-	end
-end
+Defer.set.setopts(options)
+-- for scope, set in pairs(options) do
+-- 	for k, v in pairs(set) do
+-- 		vim[scope][k] = v
+-- 	end
+-- end
 
 local append = {
 	wildignore = ".doc,*.pdf,*.cbr,*.cbz,.o,*.obj,*.exe,*.dll",
 }
-
-for scope, add in pairs(append) do
-	vim.opt[scope]:append(add)
-end
+Defer.set.appendopts(append)
 
 -- vim.opt.:append()
 

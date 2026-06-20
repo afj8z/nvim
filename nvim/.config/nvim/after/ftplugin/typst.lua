@@ -1,3 +1,4 @@
+vim.keymap.set("n", "<leader>p", ":TypstPreviewToggle<CR>")
 vim.keymap.set("i", "<CR>", function()
 	local row = vim.api.nvim_win_get_cursor(0)[1]
 	local current_line = vim.api.nvim_get_current_line()

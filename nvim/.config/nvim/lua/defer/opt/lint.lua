@@ -4,6 +4,7 @@ local function load_lint()
 	lint.linters_by_ft = {
 		c = { "cppcheck" },
 		cpp = { "cppcheck" },
+		-- go = { "golangci-lint" },
 	}
 
 	local cppcheck = lint.linters.cppcheck
@@ -34,6 +35,7 @@ return {
 	ft = {
 		"c",
 		"cpp",
+		"go",
 	},
 	load = load_lint,
 }

@@ -31,6 +31,9 @@ local function load_mason()
 			"sqls",
 			"r-languageserver",
 			"air",
+			"gopls",
+			"gofumpt",
+			"golangci-lint",
 		},
 	})
 end

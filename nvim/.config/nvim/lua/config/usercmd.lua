@@ -52,3 +52,9 @@ end, {
 add("Lp", function(opts)
 	vim.cmd("lua print(" .. opts.args .. ")")
 end, { nargs = "*" })
+
+add("Lp", function(opts)
+	vim.cmd("lua print(" .. opts.args .. ")")
+end, { nargs = "*" })
+
+add("Rld", ":update<CR>:source<CR>", {})

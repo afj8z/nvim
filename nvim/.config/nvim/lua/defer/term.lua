@@ -6,9 +6,10 @@ local shell_state = {
 	prevwid = vim.api.nvim_get_current_win(),
 }
 
-local function ctrl_t(cnt, mode)
+local function make_term(cnt, mode, custom_term_name)
+	local term_name = custom_term_name or ":shell"
 	shell_state.prevwid = shell_state.prevwid or vim.api.nvim_get_current_win()
-	local b = vim.fn.bufnr(":shell")
+	local b = vim.fn.bufnr(term_name)
 
 	-- return to previous window, maybe close the :shell tabpage/split
 	if vim.api.nvim_get_current_buf() == b then
@@ -38,7 +39,7 @@ local function ctrl_t(cnt, mode)
 					and vim.fn.line("$") == 1
 				then
 					vim.cmd("bwipeout! %")
-					ctrl_t(cnt, mode)
+					make_term(cnt, mode)
 				end
 				return
 			end
@@ -92,7 +93,7 @@ local function ctrl_t(cnt, mode)
 		then
 			vim.fn.win_gotoid(shell_state.prevwid)
 			vim.cmd("bwipeout! " .. b)
-			ctrl_t(cnt, mode)
+			make_term(cnt, mode)
 		end
 	else
 		local origbuf = vim.api.nvim_get_current_buf()
@@ -101,12 +102,12 @@ local function ctrl_t(cnt, mode)
 		vim.cmd("terminal")
 		vim.bo.scrollback = 100000
 
-		pcall(vim.api.nvim_buf_set_name, 0, ":shell")
+		pcall(vim.api.nvim_buf_set_name, 0, term_name)
 		pcall(vim.cmd, "bwipeout! #")
 
 		vim.api.nvim_create_autocmd("VimLeavePre", {
 			pattern = "*",
-			command = "bwipeout! ^:shell$",
+			command = "bwipeout! ^" .. term_name .. "$",
 		})
 
 		vim.cmd("let @# = " .. origbuf)
@@ -116,7 +117,7 @@ local function ctrl_t(cnt, mode)
 				vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true)
 			vim.api.nvim_feedkeys(termcode, "n", false)
 			vim.schedule(function()
-				ctrl_t(0, mode)
+				make_term(0, mode, term_name)
 			end)
 		end, { buffer = true, silent = true })
 	end
@@ -126,14 +127,15 @@ local function ctrl_t(cnt, mode)
 end
 
 local function hide_shell()
-	local b = vim.fn.bufnr("^:shell$")
-	if b == -1 then
-		return
-	end
+	local buffers = vim.tbl_filter(function(b)
+		return vim.fn.bufname(b):match("^:shell")
+	end, vim.api.nvim_list_bufs())
 
-	local wins = vim.fn.win_findbuf(b)
-	for _, win in ipairs(wins) do
-		pcall(vim.api.nvim_win_close, win, true)
+	for _, b in ipairs(buffers) do
+		local wins = vim.fn.win_findbuf(b)
+		for _, win in ipairs(wins) do
+			pcall(vim.api.nvim_win_close, win, true)
+		end
 	end
 end
 
@@ -144,16 +146,22 @@ vim.keymap.set(
 	{ silent = true, desc = "Hide :shell window" }
 )
 
-vim.keymap.set("t", "<M-t>", function()
+vim.keymap.set("t", "<C-s>", function()
 	local termcode =
 		vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true)
 	vim.api.nvim_feedkeys(termcode, "n", false)
 	vim.schedule(hide_shell)
 end, { silent = true, desc = "Hide :shell window from terminal" })
 
-vim.keymap.set("n", "<C-t>", function()
-	ctrl_t(vim.v.count, "tab")
+vim.keymap.set("n", "<C-s>", function()
+	make_term(vim.v.count, "tab")
 end, { silent = true, desc = "Toggle :shell in new tab" })
-vim.keymap.set("n", "'<C-t>", function()
-	ctrl_t(vim.v.count, "split")
+vim.keymap.set("n", "<C-S-S>", function()
+	make_term(vim.v.count, "split")
 end, { silent = true, desc = "Toggle :shell in split" })
+vim.keymap.set("n", "%<C-s>", function()
+	local current_file = vim.fn.expand("%:t")
+	local term_name = current_file ~= "" and (":shell_" .. current_file)
+		or ":shell_unnamed"
+	make_term(vim.v.count, "split", term_name)
+end, { silent = true, desc = "Toggle file-specific :shell in split" })

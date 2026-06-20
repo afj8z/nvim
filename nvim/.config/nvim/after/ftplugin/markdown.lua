@@ -1,5 +1,16 @@
 vim.opt.conceallevel = 2
 
+if vim.bo.buftype == "nofile" then
+	local vo = {
+		opt = {
+			wrap = true,
+			concealcursor = "ni",
+			conceallevel = 1,
+		},
+	}
+	Defer.set.setopts(vo)
+end
+
 vim.keymap.set("i", "<CR>", function()
 	local row = vim.api.nvim_win_get_cursor(0)[1]
 	local current_line = vim.api.nvim_get_current_line()

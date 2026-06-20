@@ -29,9 +29,14 @@ local function load_conform()
 			cpp = { "clang-format" },
 			kanata = { "kbdfmt" },
 			r = { "air" },
-			-- TODO: formatter for kanata (ft=kbd)
+			go = { "gofumpt", "golines" },
 		},
 		formatters = {
+			golines = {
+				command = "golines",
+				args = { "-m", "80", "-t", "6", "--shorten-comments" },
+				stdin = true,
+			},
 
 			kbdmft = {
 				command = "kbdfmt",
@@ -92,6 +97,7 @@ return {
 		"kanata",
 		"c",
 		"cpp",
+		"go",
 	},
 	load = load_conform,
 }

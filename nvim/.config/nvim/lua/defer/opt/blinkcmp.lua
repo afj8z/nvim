@@ -29,7 +29,7 @@ local function load_blinkcmp()
 		},
 		snippets = { preset = "luasnip" },
 		sources = {
-			default = { "lsp", "path", "snippets", "buffer", "datword" },
+			default = { "lsp", "snippets", "buffer", "path", "datword" },
 			providers = {
 				lsp = {
 					timeout_ms = 10000,

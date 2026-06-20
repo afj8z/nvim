@@ -32,6 +32,7 @@ local function load_treesitter()
 		"kbd",
 		"r",
 		"julia",
+		"go",
 	}
 	vim.api.nvim_create_autocmd("FileType", {
 		pattern = ft_to_parse,

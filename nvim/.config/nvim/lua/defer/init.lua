@@ -20,6 +20,14 @@ return {
 			"blinklib",
 			{ src = "https://github.com/Saghen/blink.lib" },
 		},
+		{
+			"nio",
+			{ src = "https://github.com/nvim-neotest/nvim-nio" },
+		},
+		{
+			"dap-ui",
+			{ src = "https://github.com/rcarriga/nvim-dap-ui.git" },
+		},
 	},
 	ignore = {
 		"shared.lua",

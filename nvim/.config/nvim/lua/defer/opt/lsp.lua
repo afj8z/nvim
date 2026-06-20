@@ -117,8 +117,8 @@ local function load_lsp()
 		opts = opts or {}
 		opts.focus = true
 		opts.anchor_bias = "below"
-		opts.max_height = 11
-		opts.max_width = 80
+		opts.max_height = 20
+		opts.max_width = 88
 		return orig_util_open_floating_preview(contents, syntax, opts, ...)
 	end
 end

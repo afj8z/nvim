@@ -24,6 +24,7 @@ M.lsp_filetypes = {
 	"r",
 	"rmd",
 	"julia",
+	"go",
 }
 
 return M

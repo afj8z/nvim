@@ -2,25 +2,6 @@ local function load_luasnip()
 	local utils = require("ajf.utils")
 	local ls = require("luasnip")
 	local types = require("luasnip.util.types")
-	local colors = require("ajf.colors")
-
-	-- testcolors
-	vim.api.nvim_set_hl(0, "__LuasnipActSnip", { bg = colors.comment })
-	vim.api.nvim_set_hl(
-		0,
-		"TESTYELLOW",
-		{ bg = "#fff000", fg = "#ffffff", bold = true }
-	)
-	vim.api.nvim_set_hl(
-		0,
-		"TESTPURPLE",
-		{ bg = "#ff00ff", fg = "#ffffff", bold = true }
-	)
-	vim.api.nvim_set_hl(
-		0,
-		"TESTCYAN",
-		{ bg = "#00ffff", fg = "#ffffff", bold = true }
-	)
 
 	ls.setup({
 		enable_autosnippets = true,
@@ -29,24 +10,25 @@ local function load_luasnip()
 		ext_opts = {
 			[types.insertNode] = {
 				active = {
-					-- virt_text = { { "●", "DiagnosticInfo" } },
+
+					hl_group = "LuaSnipAct",
 				},
 				unvisited = {
-
-					virt_text = { { "●", "DiagnosticInfo" } },
+					hl_group = "LuaSnipUnv",
+					virt_text = { { " ", "LuaSnipUnv" } },
 					virt_text_pos = "inline",
 				},
-				-- visited = {
-				-- 	hl_group = "Comment",
-				-- },
-				passive = {
-					hl_group = "TESTPURPLE",
+			},
+			[types.exitNode] = {
+				unvisited = {
+					hl_group = "LuaSnipUnv",
+					virt_text = { { " ", "LuaSnipUnv" } },
+					virt_text_pos = "inline",
 				},
 			},
 		},
 	})
 
-	require("luasnip.loaders.from_vscode").lazy_load()
 	require("luasnip.loaders.from_lua").load({
 		paths = "~/.config/nvim/lua/snippets",
 	})
