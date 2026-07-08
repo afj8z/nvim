@@ -1,14 +1,5 @@
-local utils = require("defer")
-
-local controller_load_fn = utils.create_toggle_controller("Copilot", {
-
+local controller_load_fn = require("defer").create_toggle_controller("Copilot", {
 	load = function()
-		-- node not in sys PATH, so make available to Mason in nvim
-		local node_bin_path =
-			vim.fn.expand("$HOME/.config/nvm/versions/node/v24.12.0/bin") -- Update version if needed
-		if vim.fn.isdirectory(node_bin_path) == 1 then
-			vim.env.PATH = node_bin_path .. ":" .. vim.env.PATH
-		end
 		require("copilot").setup({
 			suggestion = {
 				enabled = true,
@@ -19,6 +10,9 @@ local controller_load_fn = utils.create_toggle_controller("Copilot", {
 					prev = "<M-[>",
 					dismiss = "<C-]>",
 				},
+			},
+			panel = {
+				auto_refresh = true,
 			},
 		})
 	end,

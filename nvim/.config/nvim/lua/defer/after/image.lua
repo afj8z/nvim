@@ -3,16 +3,16 @@ local utils = require("defer")
 local controller_load_fn = utils.create_toggle_controller("Image", {
 	load = function()
 		require("image").setup({
-			backend = "ueberzug",
+			backend = "sixel",
 		})
 	end,
 
 	enable = function()
-		vim.cmd("lua require('image').enable()") -- enable the plugin
+		vim.cmd("lua require('image').enable()")
 	end,
 
 	disable = function()
-		vim.cmd("lua require('image').disable()") -- disable the plugin
+		vim.cmd("lua require('image').disable()")
 	end,
 })
 

@@ -1,5 +1,4 @@
 local style = require("ajf.utils").get_settings()
-local vc = vim.cmd
 
 local options = {
 	opt = {
@@ -28,9 +27,12 @@ local options = {
 		smartcase = true,
 		hlsearch = true,
 		title = true,
+		spelllang = "en_us,de_de",
 		completeopt = { "menu", "menuone", "noselect" },
-		guicursor = "n-v-c:block,i-ci-r:block-blinkwait0-blinkoff50-blinkon50-Cursor/lCursor,o:hor10-Cursor",
+		guicursor = "n-v-c:block,i-ci-r:block-blinkwait0-blinkoff500-blinkon50-Cursor/lCursor,o:hor10-Cursor",
 		iskeyword = "@,48-57,192-255",
+		laststatus = 2,
+		fillchars = "horiz:━,vert:┃,horizup:┻,horizdown:┳,vertleft:┫,vertright:┣,verthoriz:╋",
 	},
 	g = {
 		have_nerd_font = true,
@@ -49,18 +51,10 @@ local options = {
 }
 
 Defer.set.setopts(options)
--- for scope, set in pairs(options) do
--- 	for k, v in pairs(set) do
--- 		vim[scope][k] = v
--- 	end
--- end
 
 local append = {
 	wildignore = ".doc,*.pdf,*.cbr,*.cbz,.o,*.obj,*.exe,*.dll",
 }
 Defer.set.appendopts(append)
 
--- vim.opt.:append()
-
-vc("set updatetime=750")
-vc("colorscheme tundra")
+vim.cmd("set updatetime=750")

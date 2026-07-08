@@ -1,6 +1,5 @@
 -- taken from https://github.com/justinmk/config/blob/master/.config/nvim/lua/my/ctrl_s_shell.lua
--- and rewritten in lua, with slight behaviour change to `'C-t`, with this opening shell in new split
--- in current window
+-- and rewritten in lua, with slight behaviour change
 
 local shell_state = {
 	prevwid = vim.api.nvim_get_current_win(),
@@ -141,7 +140,7 @@ end
 
 vim.keymap.set(
 	{ "n" },
-	"<M-t>",
+	"<M-s>",
 	hide_shell,
 	{ silent = true, desc = "Hide :shell window" }
 )

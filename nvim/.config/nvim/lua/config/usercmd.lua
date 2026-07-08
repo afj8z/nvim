@@ -49,12 +49,4 @@ end, {
 	desc = "Run builtin :make and send errors to trouble.nvim",
 })
 
-add("Lp", function(opts)
-	vim.cmd("lua print(" .. opts.args .. ")")
-end, { nargs = "*" })
-
-add("Lp", function(opts)
-	vim.cmd("lua print(" .. opts.args .. ")")
-end, { nargs = "*" })
-
-add("Rld", ":update<CR>:source<CR>", {})
+add("Rld", ":update | source", {})

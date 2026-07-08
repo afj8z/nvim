@@ -23,6 +23,11 @@ local function numr_calc()
 	if key == "\r" or key == "\n" then
 		vim.api.nvim_buf_set_lines(0, row + 1, row + 1, false, { nline })
 	else
+		if key == "\t" then
+			result = line .. " = " .. result:gsub("\n", "")
+			vim.api.nvim_set_current_line(result)
+			vim.api.nvim_win_set_cursor(0, { row + 1, string.len(result) })
+		end
 		vim.api.nvim_feedkeys(key, "m", true)
 	end
 end

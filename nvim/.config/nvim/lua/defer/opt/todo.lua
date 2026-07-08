@@ -19,10 +19,6 @@ return {
 	name = "todo",
 	src = "https://github.com/folke/todo-comments.nvim.git",
 	load = load_todo,
-	cmds = {
-		"TodoLocList",
-		"TodoQuickFix",
-		{ cmd = "TodoTelescope", deps = { "telescope" } },
-	},
+	cmds = { "TodoLocList", "TodoQuickFix" },
 	libs = { "plenary" },
 }

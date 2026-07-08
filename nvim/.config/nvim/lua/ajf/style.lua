@@ -2,17 +2,6 @@ local M = {}
 
 local sym = require("ajf.utils").get_settings().symbols
 
-function M.get(name)
-	if name == "" or name == nil then
-		return "A"
-	end
-	if not M.icons.symbol_kinds[name] then
-		return "A"
-	end
-
-	return M.icons.symbol_kinds[name]
-end
-
 --- Diagnostic severities.
 M.icons = {
 	diagnostics = {

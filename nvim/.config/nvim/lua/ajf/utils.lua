@@ -10,7 +10,7 @@ function M.set_settings(settings)
 end
 
 --- Retrieves the stored configuration table.
--- @return table The settings table.
+---@return table table The settings table.
 function M.get_settings()
 	return settings_cache
 end

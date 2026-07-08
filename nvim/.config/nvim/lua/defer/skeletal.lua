@@ -1,7 +1,7 @@
 local function load_skeletal()
 	require("skeletal").setup({
 		template_dir = vim.fn.expand("~/documents/templates"),
-		jump_mapping = "<leader>j",
+		jump_mapping = "<leader>T",
 		picker = "snacks",
 		values = {
 			author = function()

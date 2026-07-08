@@ -1,23 +1,20 @@
 local function load_nim()
 	require("nIM").setup({
+		enabled = { statusline = false },
 		run_file = {
 			keymap = "<leader>a",
 		},
 		redir = {
 			keymaps = {
-				-- "expand_cmd" captures the current command line and redirects output.
 				expand_cmd = "<C-a>",
 			},
 		},
 		statusline = {
 			modules = {
-				lsp = {
-					use_conform = true,
-					show_formatter = true,
-				},
+				lsp = { use_conform = true, show_formatter = false },
 				file = {
 					path = {
-						show = "full",
+						show = "name",
 						envsub = {
 							["/home/aidanfleming"] = "~",
 							regex = {
@@ -28,13 +25,21 @@ local function load_nim()
 						},
 					},
 				},
-				mode = {
-					name = "short",
-					markers = "-",
+				mode = { markers = "" },
+				diagnostics = { persist = { error = false, warn = false } },
+				file_info = {
+					show = {
+						filetype = false,
+						encoding = false,
+						filesize = true,
+						permissions = true,
+					},
+					permissions = { short = false },
+					separator = "  ",
 				},
 			},
 			order = {
-				left = { "mode", "file", "snippet" },
+				left = { "mode", "file", "file_info", "snippet" },
 				center = {},
 				right = { "lsp", "diagnostics", "position" },
 			},
@@ -50,14 +55,13 @@ local function load_nim()
 		},
 		snipshot = {
 			keymaps = {
-				-- paste_recent = "<leader>xx", -- e.g. "<Leader>p"
-				browse_global = "<leader>xg", -- e.g. "<Leader>pg"
-				browse_local = "<leader>xl", -- e.g. "<Leader>pl"
+				browse_global = "<leader>xg",
+				browse_local = "<leader>xc",
 			},
 		},
 		projectfile = {
 			keymaps = {
-				find = "<leader>h",
+				find = "<leader>p",
 			},
 		},
 	})

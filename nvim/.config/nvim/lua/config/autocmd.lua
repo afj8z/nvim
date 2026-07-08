@@ -64,7 +64,7 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 	group = vim.api.nvim_create_augroup("autoclose", { clear = true }),
 	pattern = "*",
 	callback = function()
-		if vim.o.buftype == "quickfix" then
+		if vim.o.buftype == "quickfix" or vim.o.buftype == "nofile" then
 			if vim.fn.winbufnr(2) == -1 then
 				vim.cmd.quit({ bang = true })
 			end
@@ -80,8 +80,6 @@ vim.api.nvim_create_autocmd({ "TermOpen" }, {
 		vim.opt_local.number = false
 		vim.opt_local.relativenumber = false
 		vim.opt_local.scrolloff = 0
-		-- vim.cmd("startinsert")
-		-- vim.bo.filetype = "terminal"
 	end,
 })
 

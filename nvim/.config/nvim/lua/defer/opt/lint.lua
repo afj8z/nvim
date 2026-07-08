@@ -23,10 +23,10 @@ local function load_lint()
 		"--suppress=missingInclude",
 		"--check-level=exhaustive",
 	}
-	vim.keymap.set("n", "<leader>lc", function()
-		lint.try_lint()
-		vim.notify("Executed cppcheck", vim.log.levels.INFO)
-	end, { desc = "Trigger nvim-lint (cppcheck)" })
+	-- vim.keymap.set("n", "<leader>lc", function()
+	-- 	lint.try_lint()
+	-- 	vim.notify("Executed cppcheck", vim.log.levels.INFO)
+	-- end, { desc = "Trigger nvim-lint (cppcheck)" })
 end
 
 return {

@@ -3,6 +3,14 @@ local function load_surround()
 	local nmap = utils.nmap
 
 	require("mini.surround").setup({
+		mappings = {
+			add = "gsa",
+			delete = "gsd",
+			find = "gsf",
+			find_left = "gsF",
+			highlight = "gsh",
+			replace = "gsr",
+		},
 		custom_surroundings = {
 			m = {
 				input = { "m" },
